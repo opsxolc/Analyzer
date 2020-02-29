@@ -13,31 +13,45 @@ namespace Analyzer
 	partial class ViewController
 	{
 		[Outlet]
-		AppKit.NSOutlineView InterView { get; set; }
+		AppKit.NSTextView InterText { get; set; }
 
 		[Outlet]
-		AppKit.NSTextField StatLabel { get; set; }
+		AppKit.NSOutlineView InterView { get; set; }
 
 		[Outlet]
 		AppKit.NSTextField StatPath { get; set; }
 
 		[Outlet]
-		AppKit.NSScrollView StatText { get; set; }
-
-		[Outlet]
-		AppKit.NSTextView Text { get; set; }
+		AppKit.NSTableView StatTableView { get; set; }
 
 		[Action ("CloseButton:")]
 		partial void CloseButton (Foundation.NSObject sender);
 
+		[Action ("CompareStat:")]
+		partial void CompareStat (Foundation.NSObject sender);
+
+		[Action ("DeleteStat:")]
+		partial void DeleteStat (Foundation.NSObject sender);
+
+		[Action ("LoadStat:")]
+		partial void LoadStat (Foundation.NSObject sender);
+
 		[Action ("ReadStat:")]
 		partial void ReadStat (Foundation.NSObject sender);
+
+		[Action ("SelectionChanged:")]
+		partial void SelectionChanged (AppKit.NSOutlineView sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (StatLabel != null) {
-				StatLabel.Dispose ();
-				StatLabel = null;
+			if (InterText != null) {
+				InterText.Dispose ();
+				InterText = null;
+			}
+
+			if (InterView != null) {
+				InterView.Dispose ();
+				InterView = null;
 			}
 
 			if (StatPath != null) {
@@ -45,19 +59,9 @@ namespace Analyzer
 				StatPath = null;
 			}
 
-			if (StatText != null) {
-				StatText.Dispose ();
-				StatText = null;
-			}
-
-			if (Text != null) {
-				Text.Dispose ();
-				Text = null;
-			}
-
-			if (InterView != null) {
-				InterView.Dispose ();
-				InterView = null;
+			if (StatTableView != null) {
+				StatTableView.Dispose ();
+				StatTableView = null;
 			}
 		}
 	}

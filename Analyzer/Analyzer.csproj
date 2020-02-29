@@ -108,16 +108,17 @@
       <DependentUpon>ViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="LibraryImport.cs" />
-    <Compile Include="Stat.cs" />
+    <Compile Include="StatJson.cs" />
     <Compile Include="IntervalOutlineDataSource.cs" />
     <Compile Include="Interval.cs" />
     <Compile Include="IntervalOutlineDelegate.cs" />
+    <Compile Include="Stat.cs" />
+    <Compile Include="StatTableDataSource.cs" />
+    <Compile Include="StatTableDelegate.cs" />
+    <Compile Include="StatDir.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\sts.gz+" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
   <Import Project="..\packages\Xamarin.Forms.3.6.0.344457\build\Xamarin.Forms.targets" Condition="Exists('..\packages\Xamarin.Forms.3.6.0.344457\build\Xamarin.Forms.targets')" />
