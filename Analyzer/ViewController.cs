@@ -1,18 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using AppKit;
 using Foundation;
+using System.Drawing;
+using System.Data;
 
 namespace Analyzer
 {
     public partial class ViewController : NSViewController
     {
+        private NSAlert Alert;  // диалоговое окно для сообщений
+        private StatCompareList CompareList;
+
         public ViewController(IntPtr handle) : base(handle)
         {
         }
 
+        // Добавить статистику в StatTableView
         public void AddStatToList(Stat stat, string creationTime)
         {
             ((StatTableDataSource)StatTableView.DataSource).StatDirs
@@ -51,6 +58,8 @@ namespace Analyzer
             // Do any additional setup after loading the view.
             LoadStatList();
             InitDataInterView();
+            Alert = new NSAlert();
+            CompareList = new StatCompareList();
         }
 
         public override NSObject RepresentedObject
@@ -92,9 +101,13 @@ namespace Analyzer
             string res;
             Stat stat;
             LibraryImport.read_stat_(StatPath.StringValue, out res);
-            if (res == null)
-                return;  // TODO: show dialog box "Could not find file by path: "<path>"."
-            string TmpFileLocDir = Path.GetDirectoryName(StatPath.StringValue); // Директория с загружаемым файлом
+            if (res == null) {
+                Alert.MessageText = "Не найден файл \"" + StatPath.StringValue + "\".";
+                Alert.RunModal();
+                return;
+            }
+            // Директория с загружаемым файлом
+            string TmpFileLocDir = Path.GetDirectoryName(StatPath.StringValue); 
             Console.WriteLine(res);
             stat = new Stat(res, TmpFileLocDir);
 
@@ -105,8 +118,12 @@ namespace Analyzer
             FileStream file = File.Create(TmpDirPath + "/stat.json");
             file.Write(new UTF8Encoding(true).GetBytes(res));
             file.Close();
-            File.Copy(TmpFileLocDir + '/' + stat.Info.inter[0].id.pname,
-                TmpDirPath + '/' + stat.Info.inter[0].id.pname);
+            try { 
+                File.Copy(TmpFileLocDir + '/' + stat.Info.inter[0].id.pname,
+                    TmpDirPath + '/' + stat.Info.inter[0].id.pname);
+            } catch (Exception) {
+                Console.WriteLine("Could not open file");
+            }
             AddStatToList(stat, creationTime);
 
             //---  Set data to InterView  ---//
@@ -115,11 +132,19 @@ namespace Analyzer
 
         partial void LoadStat(NSObject sender)
         {
-            if (!StatTableView.IsRowSelected(StatTableView.SelectedRow))
+            if (StatTableView.SelectedRowCount != 1) {
+                Alert.MessageText = "Пожалуйста, выберите одну " +
+                    "запись для загрузки.";
+                Alert.RunModal();
                 return;
+            }
+
             StatDir statDir = ((StatTableDataSource)StatTableView.DataSource)
                 .StatDirs[(int)StatTableView.SelectedRow];
             SetDataToInterView(new Stat(statDir.path));
+
+            //---  Switch active view   ---//
+            TabView.SelectLast(TabView);
         }
 
         partial void DeleteStat(NSObject sender)
@@ -132,7 +157,27 @@ namespace Analyzer
             ((StatTableDataSource)StatTableView.DataSource).StatDirs.Remove(statDir);
             StatTableView.ReloadData();
             Directory.Delete(StatDir.StatDirPath + '/' + statDir.hash, true);
-            
+        }
+
+        partial void CompareStat(NSObject sender)
+        {   
+            var SelectedRowsArray = StatTableView.SelectedRows.ToArray();
+            if (SelectedRowsArray.Length < 2)
+            { 
+                Alert.MessageText = "Пожалуйста, выберите " +
+                    "2 или более записи для сравнения.";
+                Alert.RunModal();
+                return;
+            }
+            CompareList.Clear();
+            var StatDirs = ((StatTableDataSource)StatTableView.DataSource).StatDirs;
+
+            for (int i = 0; i < SelectedRowsArray.Length; ++i)
+                CompareList.Add(new Stat(StatDirs[(int)SelectedRowsArray[i]].ReadJson(),
+                    Path.GetDirectoryName(StatDirs[(int)SelectedRowsArray[i]].path)));
+
+            Console.WriteLine(CompareList.GetCount() + "\n\n" + CompareList.At(0).ToJson());
+
         }
 
     }

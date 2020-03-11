@@ -116,6 +116,8 @@
     <Compile Include="StatTableDataSource.cs" />
     <Compile Include="StatTableDelegate.cs" />
     <Compile Include="StatDir.cs" />
+    <Compile Include="StatCompareList.cs" />
+    <Compile Include="DiagramView.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />

@@ -13,6 +13,9 @@ namespace Analyzer
 	partial class ViewController
 	{
 		[Outlet]
+		Foundation.NSObject Diagram { get; set; }
+
+		[Outlet]
 		AppKit.NSTextView InterText { get; set; }
 
 		[Outlet]
@@ -23,6 +26,9 @@ namespace Analyzer
 
 		[Outlet]
 		AppKit.NSTableView StatTableView { get; set; }
+
+		[Outlet]
+		AppKit.NSTabView TabView { get; set; }
 
 		[Action ("CloseButton:")]
 		partial void CloseButton (Foundation.NSObject sender);
@@ -62,6 +68,16 @@ namespace Analyzer
 			if (StatTableView != null) {
 				StatTableView.Dispose ();
 				StatTableView = null;
+			}
+
+			if (TabView != null) {
+				TabView.Dispose ();
+				TabView = null;
+			}
+
+			if (Diagram != null) {
+				Diagram.Dispose ();
+				Diagram = null;
 			}
 		}
 	}

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+
 namespace Analyzer
 {
     public class StatDir
@@ -18,6 +20,14 @@ namespace Analyzer
             this.creationTime = creationTime;
             this.hash = hash;
             this.info = info;
+        }
+
+        public string ReadJson()
+        {
+            StreamReader reader = new StreamReader(path);
+            string json = reader.ReadToEnd();
+            reader.Close();
+            return json;
         }
     }
 }

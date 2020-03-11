@@ -10,7 +10,7 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                    <window key="window" title="Анализатор статистик" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
@@ -83,17 +83,17 @@
                                             <rect key="frame" x="17" y="17" width="547" height="390"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" ambiguous="YES" id="1NB-nE-mKX">
-                                                <rect key="frame" x="1" y="0.0" width="545" height="374"/>
+                                                <rect key="frame" x="1" y="0.0" width="545" height="389"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnSelection="YES" autosaveColumns="NO" headerView="SDD-Lu-rgK" id="MJu-KT-gTE">
-                                                        <rect key="frame" x="0.0" y="0.0" width="553" height="349"/>
+                                                    <tableView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" autosaveColumns="NO" typeSelect="NO" headerView="SDD-Lu-rgK" id="MJu-KT-gTE">
+                                                        <rect key="frame" x="0.0" y="0.0" width="545" height="364"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                         <tableColumns>
-                                                            <tableColumn width="370" minWidth="40" maxWidth="1000" id="C8Q-O3-KFs">
+                                                            <tableColumn width="382.5" minWidth="40" maxWidth="1000" id="C8Q-O3-KFs">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Статистика выполнения">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -106,7 +106,7 @@
                                                                 </textFieldCell>
                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                             </tableColumn>
-                                                            <tableColumn width="177" minWidth="40" maxWidth="1000" id="Gby-5S-L7K">
+                                                            <tableColumn width="156.5" minWidth="40" maxWidth="1000" id="Gby-5S-L7K">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Дата загрузки">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -123,7 +123,7 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="rDV-gx-CZf">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="rDV-gx-CZf">
                                                 <rect key="frame" x="1" y="374" width="545" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -132,7 +132,7 @@
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" id="SDD-Lu-rgK">
-                                                <rect key="frame" x="0.0" y="0.0" width="553" height="25"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="545" height="25"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
@@ -155,7 +155,7 @@
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="CompareStat:" target="XfG-lQ-9wD" id="V5p-0W-MXA"/>
+                                                <action selector="CompareStat:" target="XfG-lQ-9wD" id="saR-Zv-Vwd"/>
                                             </connections>
                                         </button>
                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kDa-MS-1g4">
@@ -293,15 +293,15 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="225" height="456"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="Npa-8d-W3f">
-                                                                <rect key="frame" x="0.0" y="0.0" width="210" height="456"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="225" height="456"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <textView ambiguous="YES" editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="Urn-Ga-3So">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="210" height="456"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="225" height="456"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                                        <size key="minSize" width="210" height="456"/>
+                                                                        <size key="minSize" width="225" height="456"/>
                                                                         <size key="maxSize" width="260" height="10000000"/>
                                                                         <color key="insertionPointColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                                     </textView>
@@ -327,15 +327,29 @@
                                     </subviews>
                                 </view>
                             </tabViewItem>
+                            <tabViewItem label="Сравнение" identifier="" id="RRP-da-CML">
+                                <view key="view" id="vtc-IK-O0d">
+                                    <rect key="frame" x="10" y="33" width="680" height="454"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="85T-1z-Io8" customClass="DiagramView">
+                                            <rect key="frame" x="17" y="17" width="646" height="434"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        </customView>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
                         </tabViewItems>
                     </tabView>
                     <connections>
                         <outlet property="CompareStat" destination="rKM-Zc-tv0" id="z9D-GW-uKm"/>
+                        <outlet property="Diagram" destination="85T-1z-Io8" id="V7F-xF-n4T"/>
                         <outlet property="InterText" destination="Urn-Ga-3So" id="1RZ-UF-Wpn"/>
                         <outlet property="InterView" destination="R6i-uo-Jrc" id="8Vo-aO-Cpn"/>
                         <outlet property="StatListView" destination="TXE-bo-IKf" id="vkG-fY-qpZ"/>
                         <outlet property="StatPath" destination="fFH-l4-xzF" id="ipu-e8-bDA"/>
                         <outlet property="StatTableView" destination="MJu-KT-gTE" id="E5J-2C-7WL"/>
+                        <outlet property="TabView" destination="WTV-ar-rhF" id="JKh-5w-JYB"/>
                         <outlet property="TreeView" destination="WTV-ar-rhF" id="rPF-At-2wq"/>
                     </connections>
                 </viewController>
