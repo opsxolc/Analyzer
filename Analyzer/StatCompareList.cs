@@ -5,31 +5,31 @@ namespace Analyzer
 {
     public class StatCompareList
     {
-        private List<Stat> list;  // список сравнения
+        public readonly List<Stat> List;  // список сравнения
 
-        public StatCompareList() => list = new List<Stat>();
+        public StatCompareList() => List = new List<Stat>();
 
-        public void Clear() => list.Clear();
+        public void Clear() => List.Clear();
 
-        public int GetCount() => list.Count;
+        public int GetCount() => List.Count;
 
         public void Add(Stat stat)
         {
             string res1, res2;
-            list.Add(stat);
-            for (int i = 0; i < list.Count - 1; ++i)
+            List.Add(stat);
+            for (int i = 0; i < List.Count - 1; ++i)
             {
-                LibraryImport.stat_intersect_(list[i].ToJson(),
-                    list[i + 1].ToJson(), out res1, out res2);
-                list[i] = new Stat(res1, list[i].Dir);
-                list[i + 1] = new Stat(res2, list[i + 1].Dir);
+                LibraryImport.stat_intersect_(List[i].ToJson(),
+                    List[i + 1].ToJson(), out res1, out res2);
+                List[i] = new Stat(res1, List[i].Dir);
+                List[i + 1] = new Stat(res2, List[i + 1].Dir);
             }
         }
 
         public Stat At(int i)
         {
-            if (i >= 0 && i < list.Count)
-                return list[i];
+            if (i >= 0 && i < List.Count)
+                return List[i];
             return null;
         }
 

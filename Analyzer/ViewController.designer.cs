@@ -13,13 +13,19 @@ namespace Analyzer
 	partial class ViewController
 	{
 		[Outlet]
-		Foundation.NSObject Diagram { get; set; }
+		AppKit.NSTextField ChooseLabel { get; set; }
+
+		[Outlet]
+		AppKit.NSPopUpButton CompareSort { get; set; }
 
 		[Outlet]
 		AppKit.NSTextView InterText { get; set; }
 
 		[Outlet]
 		AppKit.NSOutlineView InterView { get; set; }
+
+		[Outlet]
+		OxyPlot.Xamarin.Mac.PlotView plotView { get; set; }
 
 		[Outlet]
 		AppKit.NSTextField StatPath { get; set; }
@@ -32,6 +38,12 @@ namespace Analyzer
 
 		[Action ("CloseButton:")]
 		partial void CloseButton (Foundation.NSObject sender);
+
+		[Action ("CompareBack:")]
+		partial void CompareBack (Foundation.NSObject sender);
+
+		[Action ("CompareReset:")]
+		partial void CompareReset (Foundation.NSObject sender);
 
 		[Action ("CompareStat:")]
 		partial void CompareStat (Foundation.NSObject sender);
@@ -50,6 +62,16 @@ namespace Analyzer
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (ChooseLabel != null) {
+				ChooseLabel.Dispose ();
+				ChooseLabel = null;
+			}
+
+			if (CompareSort != null) {
+				CompareSort.Dispose ();
+				CompareSort = null;
+			}
+
 			if (InterText != null) {
 				InterText.Dispose ();
 				InterText = null;
@@ -58,6 +80,11 @@ namespace Analyzer
 			if (InterView != null) {
 				InterView.Dispose ();
 				InterView = null;
+			}
+
+			if (plotView != null) {
+				plotView.Dispose ();
+				plotView = null;
 			}
 
 			if (StatPath != null) {
@@ -73,11 +100,6 @@ namespace Analyzer
 			if (TabView != null) {
 				TabView.Dispose ();
 				TabView = null;
-			}
-
-			if (Diagram != null) {
-				Diagram.Dispose ();
-				Diagram = null;
 			}
 		}
 	}

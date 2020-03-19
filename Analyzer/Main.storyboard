@@ -13,8 +13,9 @@
                     <window key="window" title="Анализатор статистик" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
-                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <rect key="contentRect" x="420" y="369" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+                        <value key="minSize" type="size" width="480" height="270"/>
                         <connections>
                             <outlet property="delegate" destination="B8D-0N-5wS" id="98r-iN-zZc"/>
                         </connections>
@@ -25,7 +26,56 @@
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="249"/>
+            <point key="canvasLocation" x="379" y="131"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="43S-DA-M4X">
+            <objects>
+                <windowController storyboardIdentifier="IntervalCompare" id="XrW-gI-ant" sceneMemberID="viewController">
+                    <window key="window" title="Анализ интервалов" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" tabbingIdentifier="Help" id="4vf-RL-tpO">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="590" y="315" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+                        <value key="minSize" type="size" width="480" height="270"/>
+                        <connections>
+                            <outlet property="delegate" destination="XrW-gI-ant" id="YkI-bx-0DU"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="uhe-Gs-aB2" kind="relationship" relationship="window.shadowedContentViewController" id="oYe-29-433"/>
+                    </connections>
+                </windowController>
+                <customObject id="AY3-Df-sH3" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="902" y="131"/>
+        </scene>
+        <!--Interval Compare View Controller-->
+        <scene sceneID="gIy-UY-w8e">
+            <objects>
+                <viewController id="uhe-Gs-aB2" customClass="IntervalCompareViewController" sceneMemberID="viewController">
+                    <view key="view" id="Xbr-af-TbM">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="McW-YU-EJx">
+                                <rect key="frame" x="222" y="127" width="37" height="16"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="x8p-5u-DZf">
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="HelloLabel" destination="McW-YU-EJx" id="Gbn-A7-QqJ"/>
+                    </connections>
+                </viewController>
+                <customObject id="aUQ-dX-Tnr" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="710" y="651"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="hIz-AP-VOD">
@@ -95,7 +145,7 @@
                                                         <tableColumns>
                                                             <tableColumn width="382.5" minWidth="40" maxWidth="1000" id="C8Q-O3-KFs">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Статистика выполнения">
-                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
@@ -108,7 +158,7 @@
                                                             </tableColumn>
                                                             <tableColumn width="156.5" minWidth="40" maxWidth="1000" id="Gby-5S-L7K">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Дата загрузки">
-                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
@@ -185,14 +235,14 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="451" height="461"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <subviews>
-                                                        <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="38" horizontalPageScroll="10" verticalLineScroll="38" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8CI-6e-qpn">
+                                                        <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="34" horizontalPageScroll="10" verticalLineScroll="34" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8CI-6e-qpn">
                                                             <rect key="frame" x="0.0" y="0.0" width="451" height="456"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" ambiguous="YES" copiesOnScroll="NO" id="DEE-Jx-VsA">
                                                                 <rect key="frame" x="1" y="0.0" width="449" height="455"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
-                                                                    <outlineView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" alternatingRowBackgroundColors="YES" multipleSelection="NO" typeSelect="NO" rowHeight="36" rowSizeStyle="large" headerView="3yK-52-8zX" viewBased="YES" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="ZId-Wf-9mX" id="R6i-uo-Jrc">
+                                                                    <outlineView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" selectionHighlightStyle="none" alternatingRowBackgroundColors="YES" multipleSelection="NO" typeSelect="NO" rowHeight="32" rowSizeStyle="large" headerView="3yK-52-8zX" viewBased="YES" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="ZId-Wf-9mX" id="R6i-uo-Jrc">
                                                                         <rect key="frame" x="0.0" y="0.0" width="449" height="430"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <size key="intercellSpacing" width="3" height="2"/>
@@ -202,7 +252,7 @@
                                                                         <tableColumns>
                                                                             <tableColumn width="196" minWidth="40" maxWidth="1000" id="ZId-Wf-9mX">
                                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Interval">
-                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <font key="font" metaFont="message" size="11"/>
                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                 </tableHeaderCell>
@@ -235,7 +285,7 @@
                                                                             </tableColumn>
                                                                             <tableColumn width="247" minWidth="40" maxWidth="1000" id="Bj4-OV-tBl">
                                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Details">
-                                                                                    <font key="font" metaFont="smallSystem"/>
+                                                                                    <font key="font" metaFont="message" size="11"/>
                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                 </tableHeaderCell>
@@ -294,7 +344,7 @@
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="Npa-8d-W3f">
                                                                 <rect key="frame" x="0.0" y="0.0" width="225" height="456"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
+                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
                                                                     <textView ambiguous="YES" editable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="Urn-Ga-3So">
                                                                         <rect key="frame" x="0.0" y="0.0" width="225" height="456"/>
@@ -332,18 +382,77 @@
                                     <rect key="frame" x="10" y="33" width="680" height="454"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
-                                        <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="85T-1z-Io8" customClass="DiagramView">
-                                            <rect key="frame" x="17" y="17" width="646" height="434"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kzy-JB-n99" customClass="PlotView">
+                                            <rect key="frame" x="-3" y="-3" width="552" height="454"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iou-tF-u5C">
+                                                    <rect key="frame" x="157" y="237" width="238" height="16"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                                    <textFieldCell key="cell" lineBreakMode="clipping" title="Выберите статистики для сравнения" id="aao-6g-HPm">
+                                                        <font key="font" usesAppearanceFont="YES"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                            </subviews>
                                         </customView>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dwC-aV-DTo">
+                                            <rect key="frame" x="555" y="403" width="125" height="25"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="123" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" inset="2" selectedItem="MzR-DM-RDx" id="YNa-EE-jfa">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                                <menu key="menu" id="wqF-wL-Z7E">
+                                                    <items>
+                                                        <menuItem title="123" state="on" id="MzR-DM-RDx"/>
+                                                        <menuItem title="Item 2" id="OGQ-PW-DSj"/>
+                                                        <menuItem title="Сортировка" id="Fss-v2-a2M"/>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                        </popUpButton>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Caf-zu-5vN">
+                                            <rect key="frame" x="577" y="435" width="80" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Сортировка" id="n9R-eZ-UbF">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Mvn-T4-tYY">
+                                            <rect key="frame" x="551" y="0.0" width="132" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                            <buttonCell key="cell" type="push" title=" Сброс" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="iZC-yv-KRH">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="CompareReset:" target="XfG-lQ-9wD" id="OdN-zE-KBh"/>
+                                            </connections>
+                                        </button>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="F2K-TA-jKT">
+                                            <rect key="frame" x="551" y="33" width="132" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                            <buttonCell key="cell" type="push" title="Назад" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8oj-de-NJq">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="CompareBack:" target="XfG-lQ-9wD" id="zzM-ya-EAv"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                             </tabViewItem>
                         </tabViewItems>
                     </tabView>
                     <connections>
+                        <outlet property="ChooseLabel" destination="iou-tF-u5C" id="L1m-Ja-2B1"/>
+                        <outlet property="CompareReset" destination="Mvn-T4-tYY" id="a9V-WO-kNF"/>
+                        <outlet property="CompareSort" destination="dwC-aV-DTo" id="NdG-M0-L7c"/>
                         <outlet property="CompareStat" destination="rKM-Zc-tv0" id="z9D-GW-uKm"/>
-                        <outlet property="Diagram" destination="85T-1z-Io8" id="V7F-xF-n4T"/>
                         <outlet property="InterText" destination="Urn-Ga-3So" id="1RZ-UF-Wpn"/>
                         <outlet property="InterView" destination="R6i-uo-Jrc" id="8Vo-aO-Cpn"/>
                         <outlet property="StatListView" destination="TXE-bo-IKf" id="vkG-fY-qpZ"/>
@@ -351,6 +460,7 @@
                         <outlet property="StatTableView" destination="MJu-KT-gTE" id="E5J-2C-7WL"/>
                         <outlet property="TabView" destination="WTV-ar-rhF" id="JKh-5w-JYB"/>
                         <outlet property="TreeView" destination="WTV-ar-rhF" id="rPF-At-2wq"/>
+                        <outlet property="plotView" destination="kzy-JB-n99" id="RP4-tL-gIn"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

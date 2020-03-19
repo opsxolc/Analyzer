@@ -46,5 +46,12 @@ namespace Analyzer
             res1 = new Stat(res_str1, stat1.Dir);
             res2 = new Stat(res_str2, stat2.Dir);
         }
+
+        public string GetLabel()
+        {
+            return "Кол-во проц.: " + Info.nproc + "\n"
+                + "Время выполн.: " + Info.inter[0].times.exec_time + "\n"
+                + "Коэф. эффект.: " + Info.inter[0].times.efficiency;
+        }
     }
 }

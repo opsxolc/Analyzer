@@ -5,15 +5,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AppKit;
 using Foundation;
-using System.Drawing;
-using System.Data;
 
 namespace Analyzer
 {
+
     public partial class ViewController : NSViewController
     {
         private NSAlert Alert;  // диалоговое окно для сообщений
-        private StatCompareList CompareList;
+        private NSAlert RemoveAlert;
+        public static StatCompareList CompareList;  // static для доступа с другого ViewController'a
+        private PlotMaker PlotMaker;
+        private nint YesButtonTag, NoButtonTag;
 
         public ViewController(IntPtr handle) : base(handle)
         {
@@ -58,8 +60,27 @@ namespace Analyzer
             // Do any additional setup after loading the view.
             LoadStatList();
             InitDataInterView();
+
             Alert = new NSAlert();
+
+            RemoveAlert = new NSAlert();
+            NoButtonTag = RemoveAlert.AddButton("Нет").Tag;
+            YesButtonTag = RemoveAlert.AddButton("Да").Tag;
+            RemoveAlert.MessageText = "Вы уверены, что хотите " +
+                "удалить выбранные статистики выполнения?";
+
             CompareList = new StatCompareList();
+            PlotMaker = new PlotMaker(plotView);
+
+            CompareSort.Enabled = false;
+            CompareSort.RemoveAllItems();
+            string[] CompareItems = { "Кол-во процессоров", "Потерянное время",
+                "Время выполнения",  "Коэф. эффективности"};
+            CompareSort.AddItems(CompareItems);
+
+            CompareSort.Activated += (object sender, EventArgs e)
+                => PlotMaker.SortBasePlot(CompareSort.TitleOfSelectedItem);
+
         }
 
         public override NSObject RepresentedObject
@@ -144,19 +165,19 @@ namespace Analyzer
             SetDataToInterView(new Stat(statDir.path));
 
             //---  Switch active view   ---//
-            TabView.SelectLast(TabView);
+            TabView.SelectAt(1);
         }
 
         partial void DeleteStat(NSObject sender)
         {
-            if (!StatTableView.IsRowSelected(StatTableView.SelectedRow))
+            if (StatTableView.SelectedRowCount == 0 || RemoveAlert.RunModal() != YesButtonTag)
                 return;
             var dataSource = (StatTableDataSource)StatTableView.DataSource;
-            StatDir statDir = dataSource.StatDirs[(int)StatTableView.SelectedRow];
-            Console.WriteLine("Delete: " + StatTableView.SelectedRow + statDir.hash);
-            ((StatTableDataSource)StatTableView.DataSource).StatDirs.Remove(statDir);
-            StatTableView.ReloadData();
-            Directory.Delete(StatDir.StatDirPath + '/' + statDir.hash, true);
+            foreach (var row in StatTableView.SelectedRows) { 
+                StatDir statDir = dataSource.StatDirs[(int)row];
+                Directory.Delete(StatDir.StatDirPath + '/' + statDir.hash, true);
+            }
+            StatTableView.RemoveRows(StatTableView.SelectedRows, NSTableViewAnimation.Fade);
         }
 
         partial void CompareStat(NSObject sender)
@@ -176,8 +197,28 @@ namespace Analyzer
                 CompareList.Add(new Stat(StatDirs[(int)SelectedRowsArray[i]].ReadJson(),
                     Path.GetDirectoryName(StatDirs[(int)SelectedRowsArray[i]].path)));
 
-            Console.WriteLine(CompareList.GetCount() + "\n\n" + CompareList.At(0).ToJson());
+            //---  Hide label and set plot  ---//
+            ChooseLabel.Hidden = true;
+            CompareSort.Enabled = true;
+            PlotMaker.BasePlot(CompareList);
 
+            //--- Switch tab  ---//
+            TabView.SelectAt(2);
+        }
+
+        partial void CompareReset(NSObject sender)
+        {
+            PlotMaker.ResetPlot();
+            CompareSort.Enabled = false;
+            ChooseLabel.Hidden = false;
+        }
+
+        partial void CompareBack(NSObject sender)
+        {
+            //TODO: Сделать нормальный "Назад", наверно
+            var storyboard = NSStoryboard.FromName("Main", null);
+            var controller = storyboard.InstantiateControllerWithIdentifier("IntervalCompare") as NSWindowController;
+            controller.ShowWindow(sender);
         }
 
     }
