@@ -4,9 +4,11 @@ using System;
 
 using Foundation;
 using AppKit;
+using CoreGraphics;
 
 namespace Analyzer
 {
+
 	public partial class IntervalCompareViewController : NSViewController
 	{
 
@@ -17,8 +19,10 @@ namespace Analyzer
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
+
             HelloLabel.StringValue = "Hello!";
             Console.WriteLine("Count: " + ViewController.CompareList.List.Count);
         }
+
     }
 }

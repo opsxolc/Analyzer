@@ -110,6 +110,12 @@ namespace Analyzer
             intervals.Clear();
             intervals.Add(stat.Interval);
             InterView.ReloadData();
+            InterView.ExpandItem(InterView.ItemAtRow(0), true);
+        }
+
+        private void InterView_DoubleClick(object sender, EventArgs e)
+        {
+            Console.WriteLine("Hello");
         }
 
         partial void CloseButton(Foundation.NSObject sender)
@@ -216,9 +222,6 @@ namespace Analyzer
         partial void CompareBack(NSObject sender)
         {
             //TODO: Сделать нормальный "Назад", наверно
-            var storyboard = NSStoryboard.FromName("Main", null);
-            var controller = storyboard.InstantiateControllerWithIdentifier("IntervalCompare") as NSWindowController;
-            controller.ShowWindow(sender);
         }
 
     }

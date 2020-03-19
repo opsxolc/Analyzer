@@ -15,6 +15,7 @@ namespace Analyzer
         private PlotView plotView;
         private StatCompareList compareList;
         private PlotModel baseModel;
+        private PlotModel detailModel;
         private LinearAxis yaxis;
 
         public PlotMaker(PlotView plotView)
@@ -157,6 +158,11 @@ namespace Analyzer
                 plotView.Model.Series.Add(data[i]);
                 plotView.Model.InvalidatePlot(true);
             }
+
+        }
+
+        public void DetailPlot(StatCompareList compareList)
+        {
 
         }
 
