@@ -14,9 +14,25 @@ namespace Analyzer
 	{
 		[Outlet]
 		AppKit.NSTextField HelloLabel { get; set; }
+
+		[Outlet]
+		AppKit.NSOutlineView IntervalTree { get; set; }
+
+		[Outlet]
+		OxyPlot.Xamarin.Mac.PlotView Plot { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (Plot != null) {
+				Plot.Dispose ();
+				Plot = null;
+			}
+
+			if (IntervalTree != null) {
+				IntervalTree.Dispose ();
+				IntervalTree = null;
+			}
+
 			if (HelloLabel != null) {
 				HelloLabel.Dispose ();
 				HelloLabel = null;

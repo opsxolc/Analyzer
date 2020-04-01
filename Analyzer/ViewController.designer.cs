@@ -22,6 +22,9 @@ namespace Analyzer
 		AppKit.NSTextView InterText { get; set; }
 
 		[Outlet]
+		AppKit.NSButton IntervalCompareButton { get; set; }
+
+		[Outlet]
 		AppKit.NSOutlineView InterView { get; set; }
 
 		[Outlet]
@@ -50,6 +53,9 @@ namespace Analyzer
 
 		[Action ("DeleteStat:")]
 		partial void DeleteStat (Foundation.NSObject sender);
+
+		[Action ("IntervalCompare:")]
+		partial void IntervalCompare (Foundation.NSObject sender);
 
 		[Action ("LoadStat:")]
 		partial void LoadStat (Foundation.NSObject sender);
@@ -100,6 +106,11 @@ namespace Analyzer
 			if (TabView != null) {
 				TabView.Dispose ();
 				TabView = null;
+			}
+
+			if (IntervalCompareButton != null) {
+				IntervalCompareButton.Dispose ();
+				IntervalCompareButton = null;
 			}
 		}
 	}

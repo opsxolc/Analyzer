@@ -12,6 +12,8 @@ namespace Analyzer
 	public partial class IntervalCompareViewController : NSViewController
 	{
 
+        private double plotMaxTime;
+
 		public IntervalCompareViewController (IntPtr handle) : base (handle)
 		{
 		}
@@ -20,8 +22,17 @@ namespace Analyzer
         {
             base.ViewDidLoad();
 
-            HelloLabel.StringValue = "Hello!";
-            Console.WriteLine("Count: " + ViewController.CompareList.List.Count);
+            PlotMaker plotMaker = new PlotMaker(Plot);
+
+            var DataSource = new IntervalOutlineDataSource();
+            DataSource.Intervals.Add(ViewController.CompareList.List[0].Interval);
+            IntervalTree.DataSource = DataSource;
+            IntervalTree.Delegate = new IntervalCompareOutlineDelegate(IntervalTree, plotMaker);
+            IntervalTree.ExpandItem(IntervalTree.ItemAtRow(0), true);
+            IntervalTree.SelectRow(0, false);
+
+            plotMaxTime = plotMaker.intervalModel.GetAxis("Time").ActualMaximum;
+            ((IntervalCompareOutlineDelegate)IntervalTree.Delegate).SetMaxTime(plotMaxTime);
         }
 
     }

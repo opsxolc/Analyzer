@@ -9,13 +9,14 @@ using OxyPlot.Xamarin.Mac;
 namespace Analyzer
 {
 
-    public class PlotMaker
+    public class PlotMaker  // TODO: Разобраться с конструктором и compareList'ом (нужен рефакторинг)
     {
 
         private PlotView plotView;
         private StatCompareList compareList;
-        private PlotModel baseModel;
-        private PlotModel detailModel;
+        public PlotModel baseModel;
+        public PlotModel detailModel;
+        public PlotModel intervalModel;
         private LinearAxis yaxis;
 
         public PlotMaker(PlotView plotView)
@@ -32,7 +33,10 @@ namespace Analyzer
         public void BasePlot(StatCompareList compareList)
         {
             this.compareList = compareList;
-            
+
+            baseModel = new PlotModel();
+            baseModel.Title = "Потерянное время";
+
             (var data, var xaxis) = InitDataAndXaxis();
             
             yaxis = new LinearAxis();
@@ -42,25 +46,25 @@ namespace Analyzer
             yaxis.Title = "Время, с";
             yaxis.AxisTitleDistance = 7;
             yaxis.AbsoluteMinimum = 0;
+            yaxis.Key = "Time";
 
             foreach (var item in compareList.List)
             {
                 xaxis[0].Labels.Add("Кол-во процессоров: " + item.Info.nproc);
                 xaxis[1].Labels.Add("Время выполнения: " + item.Info.inter[0].times.exec_time.ToString("F3"));
                 xaxis[2].Labels.Add("Коэфф. эффективности: " + item.Info.inter[0].times.efficiency.ToString("F3"));
-                data[0].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf));
-                data[1].Items.Add(new ColumnItem(item.Info.inter[0].times.idle));
-                data[2].Items.Add(new ColumnItem(item.Info.inter[0].times.comm));
+                data[0].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf_sys));
+                data[1].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf_user));
+                data[2].Items.Add(new ColumnItem(item.Info.inter[0].times.idle));
+                data[3].Items.Add(new ColumnItem(item.Info.inter[0].times.comm));
             }
 
-            baseModel = new PlotModel();
-
-            baseModel.Title = "Потерянное время";
             for (int i = 0; i < 3; ++i)
             {
                 baseModel.Axes.Add(xaxis[i]);
                 baseModel.Series.Add(data[i]);
             }
+            baseModel.Series.Add(data[3]);
             baseModel.Axes.Add(yaxis);
 
             plotView.Model = baseModel;
@@ -73,17 +77,18 @@ namespace Analyzer
 
             int curOffset = 4, offset = 13;
 
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < 4; ++i)
             {
-                xaxis.Add(new CategoryAxis
-                {
-                    Position = AxisPosition.Bottom,
-                    Angle = 5,
-                    IsZoomEnabled = false,
-                    IsPanEnabled = false,
-                    AxisTickToLabelDistance = curOffset
-                });
-                curOffset += offset;
+                if (i < 3) { 
+                    xaxis.Add(new CategoryAxis
+                    {
+                        Position = AxisPosition.Bottom,
+                        IsZoomEnabled = false,
+                        IsPanEnabled = false,
+                        AxisTickToLabelDistance = curOffset
+                    });
+                    curOffset += offset;
+                }
 
                 data.Add(new ColumnSeries
                 {
@@ -97,16 +102,19 @@ namespace Analyzer
             xaxis[0].MinorGridlineStyle = LineStyle.Dot;
 
             data[0].FillColor = OxyColors.Pink;
-            data[0].Title = "Недостаточный параллелизм";
-            data[0].MouseDown += (object sender, OxyMouseDownEventArgs e)
-                => Console.WriteLine("data[0] MouseDown "
-                + e.ClickCount + " " + e.Position);
+            data[0].Title = "Недостаточный параллелизм (sys)";
 
-            data[1].FillColor = OxyColors.LightSkyBlue;
-            data[1].Title = "Простои";
+            data[1].FillColor = OxyColors.Orchid;
+            data[1].Title = "Недостаточный параллелизм (user)";
+            //data[0].MouseDown += (object sender, OxyMouseDownEventArgs e)
+            //    => Console.WriteLine("data[0] MouseDown "
+            //    + e.ClickCount + " " + e.Position);
 
-            data[2].FillColor = OxyColors.GreenYellow;
-            data[2].Title = "Коммуникации";
+            data[2].FillColor = OxyColors.LightSkyBlue;
+            data[2].Title = "Простои";
+
+            data[3].FillColor = OxyColors.GreenYellow;
+            data[3].Title = "Коммуникации";
 
             return (data, xaxis);
         }
@@ -144,9 +152,10 @@ namespace Analyzer
                 xaxis[0].Labels.Add("Кол-во процессоров: " + item.Info.nproc);
                 xaxis[1].Labels.Add("Время выполнения: " + item.Info.inter[0].times.exec_time.ToString("F3"));
                 xaxis[2].Labels.Add("Коэфф. эффективности: " + item.Info.inter[0].times.efficiency.ToString("F3"));
-                data[0].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf));
-                data[1].Items.Add(new ColumnItem(item.Info.inter[0].times.idle));
-                data[2].Items.Add(new ColumnItem(item.Info.inter[0].times.comm));
+                data[0].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf_sys));
+                data[1].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf_user));
+                data[2].Items.Add(new ColumnItem(item.Info.inter[0].times.idle));
+                data[3].Items.Add(new ColumnItem(item.Info.inter[0].times.comm));
             }
 
             plotView.Model.Axes.Add(yaxis);
@@ -158,12 +167,62 @@ namespace Analyzer
                 plotView.Model.Series.Add(data[i]);
                 plotView.Model.InvalidatePlot(true);
             }
+            baseModel.Series.Add(data[3]);
+            plotView.Model.InvalidatePlot(true);
 
         }
 
         public void DetailPlot(StatCompareList compareList)
         {
+            // TODO: Сделать что-то ?
+        }
 
+        public void IntervalComparePlot(StatCompareList compareList, int intervalNum, double maxTime)
+        {
+            intervalModel = new PlotModel();
+            intervalModel.Title = "Потерянное время";
+
+            //---  Init axis  ---//
+            (var data, var xaxis) = InitDataAndXaxis();
+
+            yaxis = new LinearAxis();
+            yaxis.Position = AxisPosition.Left;
+            yaxis.MajorGridlineStyle = LineStyle.Dot;
+            yaxis.MinorGridlineStyle = LineStyle.Dot;
+            yaxis.Title = "Время, с";
+            yaxis.AxisTitleDistance = 7;
+            yaxis.AbsoluteMinimum = 0;
+            if (maxTime > 0)
+                yaxis.Maximum = maxTime;
+            yaxis.Key = "Time";
+
+            List<IntervalJson> intervals = new List<IntervalJson>();
+            for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
+                intervals.Add(ViewController.CompareList.At(i).Interval.GetIntervalAt(intervalNum).Info);
+
+            for (int i = 0; i < compareList.GetCount(); ++i)
+            {
+                xaxis[0].Labels.Add("Кол-во процессоров: "
+                    + compareList.At(i).Info.nproc);
+                xaxis[1].Labels.Add("Время выполнения: "
+                    + compareList.At(i).Info.inter[0].times.exec_time.ToString("F3"));
+                xaxis[2].Labels.Add("Коэфф. эффективности: "
+                    + compareList.At(i).Info.inter[0].times.efficiency.ToString("F3"));
+                data[0].Items.Add(new ColumnItem(intervals[i].times.insuf_sys));
+                data[1].Items.Add(new ColumnItem(intervals[i].times.insuf_user));
+                data[2].Items.Add(new ColumnItem(intervals[i].times.idle));
+                data[3].Items.Add(new ColumnItem(intervals[i].times.comm));
+            }
+
+            for (int i = 0; i < 3; ++i)
+            {
+                intervalModel.Axes.Add(xaxis[i]);
+                intervalModel.Series.Add(data[i]);
+            }
+            intervalModel.Series.Add(data[3]);
+            intervalModel.Axes.Add(yaxis);
+
+            plotView.Model = intervalModel;
         }
 
     }

@@ -20,8 +20,8 @@ namespace Analyzer
             this.item = item;
             lastClick = DateTime.Now;
             //TODO: Use normal window
-            controller = storyboard.InstantiateControllerWithIdentifier("IntervalCompare") as NSWindowController;
-            controller.Window.Title = "Some title " + item.Info.times.exec_time;
+            //controller = storyboard.InstantiateControllerWithIdentifier("IntervalCompare") as NSWindowController;
+            //controller.Window.Title = "Some title " + item.Info.times.exec_time;
         }
 
         public override bool AcceptsFirstResponder()
@@ -35,7 +35,7 @@ namespace Analyzer
             if (now.Subtract(lastClick).TotalMilliseconds < 500.0)
             {
                 // Actions on DoubleClick
-                controller.ShowWindow(this);
+                //controller.ShowWindow(this);
             }
             lastClick = now;
             return;
@@ -108,8 +108,6 @@ namespace Analyzer
 
                 select.BecomeFirstResponder();
             }
-
-           
 
             // Setup view based on the column selected
             textView.StringValue = "Время выполнения: " +

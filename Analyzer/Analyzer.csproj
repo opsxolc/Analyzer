@@ -131,6 +131,7 @@
     <Compile Include="IntervalCompareViewController.designer.cs">
       <DependentUpon>IntervalCompareViewController.cs</DependentUpon>
     </Compile>
+    <Compile Include="IntervalCompareOutlineDelegate.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />

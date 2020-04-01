@@ -16,6 +16,8 @@ namespace Analyzer
         public static StatCompareList CompareList;  // static для доступа с другого ViewController'a
         private PlotMaker PlotMaker;
         private nint YesButtonTag, NoButtonTag;
+        private NSWindowController IntervalCompareController;
+        private static NSStoryboard storyboard = NSStoryboard.FromName("Main", null);
 
         public ViewController(IntPtr handle) : base(handle)
         {
@@ -72,6 +74,7 @@ namespace Analyzer
             CompareList = new StatCompareList();
             PlotMaker = new PlotMaker(plotView);
 
+            IntervalCompareButton.Enabled = false;
             CompareSort.Enabled = false;
             CompareSort.RemoveAllItems();
             string[] CompareItems = { "Кол-во процессоров", "Потерянное время",
@@ -182,6 +185,7 @@ namespace Analyzer
             foreach (var row in StatTableView.SelectedRows) { 
                 StatDir statDir = dataSource.StatDirs[(int)row];
                 Directory.Delete(StatDir.StatDirPath + '/' + statDir.hash, true);
+                ((StatTableDataSource)StatTableView.DataSource).StatDirs.Remove(statDir);
             }
             StatTableView.RemoveRows(StatTableView.SelectedRows, NSTableViewAnimation.Fade);
         }
@@ -203,9 +207,15 @@ namespace Analyzer
                 CompareList.Add(new Stat(StatDirs[(int)SelectedRowsArray[i]].ReadJson(),
                     Path.GetDirectoryName(StatDirs[(int)SelectedRowsArray[i]].path)));
 
+            //---  Create controllet for interval comparison  ---//
+            IntervalCompareController = storyboard
+                .InstantiateControllerWithIdentifier("IntervalCompare") as NSWindowController;
+            IntervalCompareController.Window.Title = "Поинтервальное сравнение";
+
             //---  Hide label and set plot  ---//
             ChooseLabel.Hidden = true;
             CompareSort.Enabled = true;
+            IntervalCompareButton.Enabled = true;
             PlotMaker.BasePlot(CompareList);
 
             //--- Switch tab  ---//
@@ -216,12 +226,19 @@ namespace Analyzer
         {
             PlotMaker.ResetPlot();
             CompareSort.Enabled = false;
+            IntervalCompareButton.Enabled = false;
             ChooseLabel.Hidden = false;
         }
 
         partial void CompareBack(NSObject sender)
         {
             //TODO: Сделать нормальный "Назад", наверно
+        }
+
+
+        partial void IntervalCompare(NSObject sender)
+        {
+            IntervalCompareController.ShowWindow(sender);
         }
 
     }
