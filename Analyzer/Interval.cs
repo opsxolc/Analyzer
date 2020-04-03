@@ -26,7 +26,7 @@ namespace Analyzer
         public override string ToString()
         {
             string res = "Interval: " + Info.id.nlev
-                + " " + Info.id.t + " " + Info.id.nline;
+                + " " + Info.id.expr + " " + Info.id.nline;
             foreach (Interval inter in Intervals)
                 res += "\n" + inter;
             return res;

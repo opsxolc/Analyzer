@@ -32,6 +32,12 @@ namespace Analyzer
             Interval = new Interval(Info.inter, Dir);
         }
 
+        public void ChangeJson(string json)
+        {
+            Info = UseStatJson.GetStat(json);
+            Interval = new Interval(Info.inter, Dir);
+        }
+
         public string GetInfoForStatDir()
         {
             return Info.inter[0].id.pname + " nproc: " + Info.nproc

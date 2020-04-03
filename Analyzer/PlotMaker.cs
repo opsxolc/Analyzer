@@ -12,83 +12,26 @@ namespace Analyzer
     public class PlotMaker  // TODO: Разобраться с конструктором и compareList'ом (нужен рефакторинг)
     {
 
-        private PlotView plotView;
-        private StatCompareList compareList;
-        public PlotModel baseModel;
-        public PlotModel detailModel;
-        public PlotModel intervalModel;
-        private LinearAxis yaxis;
+        //private static LinearAxis yaxis;
 
-        public PlotMaker(PlotView plotView)
-        {
-            this.plotView = plotView;
-            plotView.Model = new PlotModel();
-        }
-
-        public void ResetPlot()
-        {
-            plotView.Model = null;
-        }
-
-        public void BasePlot(StatCompareList compareList)
-        {
-            this.compareList = compareList;
-
-            baseModel = new PlotModel();
-            baseModel.Title = "Потерянное время";
-
-            (var data, var xaxis) = InitDataAndXaxis();
-            
-            yaxis = new LinearAxis();
-            yaxis.Position = AxisPosition.Left;
-            yaxis.MajorGridlineStyle = LineStyle.Dot;
-            yaxis.MinorGridlineStyle = LineStyle.Dot;
-            yaxis.Title = "Время, с";
-            yaxis.AxisTitleDistance = 7;
-            yaxis.AbsoluteMinimum = 0;
-            yaxis.Key = "Time";
-
-            foreach (var item in compareList.List)
-            {
-                xaxis[0].Labels.Add("Кол-во процессоров: " + item.Info.nproc);
-                xaxis[1].Labels.Add("Время выполнения: " + item.Info.inter[0].times.exec_time.ToString("F3"));
-                xaxis[2].Labels.Add("Коэфф. эффективности: " + item.Info.inter[0].times.efficiency.ToString("F3"));
-                data[0].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf_sys));
-                data[1].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf_user));
-                data[2].Items.Add(new ColumnItem(item.Info.inter[0].times.idle));
-                data[3].Items.Add(new ColumnItem(item.Info.inter[0].times.comm));
-            }
-
-            for (int i = 0; i < 3; ++i)
-            {
-                baseModel.Axes.Add(xaxis[i]);
-                baseModel.Series.Add(data[i]);
-            }
-            baseModel.Series.Add(data[3]);
-            baseModel.Axes.Add(yaxis);
-
-            plotView.Model = baseModel;
-        }
-
-        private (List<ColumnSeries> data, List<CategoryAxis> xaxis) InitDataAndXaxis()
+        private static (List<ColumnSeries> data, List<CategoryAxis> xaxis) InitDataAndXaxis()
         {
             List<CategoryAxis> xaxis = new List<CategoryAxis>();
             List<ColumnSeries> data = new List<ColumnSeries>();
 
-            int curOffset = 4, offset = 13;
+            int curOffset = 2, offset = 11;
 
             for (int i = 0; i < 4; ++i)
             {
-                if (i < 3) { 
-                    xaxis.Add(new CategoryAxis
-                    {
-                        Position = AxisPosition.Bottom,
-                        IsZoomEnabled = false,
-                        IsPanEnabled = false,
-                        AxisTickToLabelDistance = curOffset
-                    });
-                    curOffset += offset;
-                }
+                xaxis.Add(new CategoryAxis
+                {
+                    FontSize = 10,
+                    Position = AxisPosition.Bottom,
+                    IsZoomEnabled = false,
+                    IsPanEnabled = false,
+                    AxisTickToLabelDistance = curOffset
+                });
+                curOffset += offset;
 
                 data.Add(new ColumnSeries
                 {
@@ -119,56 +62,68 @@ namespace Analyzer
             return (data, xaxis);
         }
 
-        public void SortBasePlot(string par)
+        public static void SortPlot(PlotView view, string par, int intervalNum = 0)
         {
-            plotView.Model.InvalidatePlot(true);
-            plotView.Model.Series.Clear();
-            plotView.Model.InvalidatePlot(true);
-            plotView.Model.Axes.Clear();
+            view.Model.InvalidatePlot(true);
+            view.Model.Series.Clear();
+            view.Model.InvalidatePlot(true);
+            var yaxis = view.Model.GetAxis("Time");
+            view.Model.Axes.Clear();
 
             (var data, var xaxis) = InitDataAndXaxis();
-
+            var compareList = ViewController.CompareList.List;
             switch (par)
             {
                 case "Кол-во процессоров":
-                    compareList.List.Sort((Stat st1, Stat st2) => st1.Info.nproc - st2.Info.nproc);
+                    compareList.Sort((Stat st1, Stat st2) => st1.Info.nproc - st2.Info.nproc);
                     break;
                 case "Потерянное время":
-                    compareList.List.Sort((Stat st1, Stat st2) =>
-                         (int) (100 * (st1.Info.inter[0].times.lost_time - st2.Info.inter[0].times.lost_time)));
+                    compareList.Sort((Stat st1, Stat st2) =>
+                         (int) (100 * (st1.Info.inter[intervalNum].times.lost_time
+                            - st2.Info.inter[intervalNum].times.lost_time)));
                     break;
                 case "Время выполнения":
-                    compareList.List.Sort((Stat st1, Stat st2) =>
-                        (int)(100 * (st1.Info.inter[0].times.exec_time - st2.Info.inter[0].times.exec_time)));
+                    compareList.Sort((Stat st1, Stat st2) =>
+                        (int)(100 * (st1.Info.inter[intervalNum].times.exec_time
+                            - st2.Info.inter[intervalNum].times.exec_time)));
                     break;
                 case "Коэф. эффективности":
-                    compareList.List.Sort((Stat st1, Stat st2) =>
-                        (int)(100 * (st1.Info.inter[0].times.efficiency - st2.Info.inter[0].times.efficiency)));
+                    compareList.Sort((Stat st1, Stat st2) =>
+                        (int)(100 * (st1.Info.inter[intervalNum].times.efficiency
+                            - st2.Info.inter[intervalNum].times.efficiency)));
                     break;
             }
 
-            foreach (var item in compareList.List)
+            List<IntervalJson> intervals = new List<IntervalJson>();
+            for (int i = 0; i < compareList.Count; ++i)
+                intervals.Add(compareList[i].Interval.GetIntervalAt(intervalNum).Info);
+
+            for (int i = 0; i < compareList.Count; ++i)
             {
-                xaxis[0].Labels.Add("Кол-во процессоров: " + item.Info.nproc);
-                xaxis[1].Labels.Add("Время выполнения: " + item.Info.inter[0].times.exec_time.ToString("F3"));
-                xaxis[2].Labels.Add("Коэфф. эффективности: " + item.Info.inter[0].times.efficiency.ToString("F3"));
-                data[0].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf_sys));
-                data[1].Items.Add(new ColumnItem(item.Info.inter[0].times.insuf_user));
-                data[2].Items.Add(new ColumnItem(item.Info.inter[0].times.idle));
-                data[3].Items.Add(new ColumnItem(item.Info.inter[0].times.comm));
+                xaxis[0].Labels.Add("Кол-во процессоров: "
+                    + compareList[i].Info.nproc);
+                xaxis[1].Labels.Add("Время выполнения: "
+                    + compareList[i].Info.inter[0].times.exec_time.ToString("F3"));
+                xaxis[2].Labels.Add("Коэфф. эффективности: "
+                    + compareList[i].Info.inter[0].times.efficiency.ToString("F3"));
+                xaxis[3].Labels.Add("Файл: "
+                    + compareList[i].Info.inter[0].id.pname);
+                data[0].Items.Add(new ColumnItem(intervals[i].times.insuf_sys));
+                data[1].Items.Add(new ColumnItem(intervals[i].times.insuf_user));
+                data[2].Items.Add(new ColumnItem(intervals[i].times.idle));
+                data[3].Items.Add(new ColumnItem(intervals[i].times.comm));
             }
 
-            plotView.Model.Axes.Add(yaxis);
-            plotView.Model.InvalidatePlot(true);
+            view.Model.Axes.Add(yaxis);
+            view.Model.InvalidatePlot(true);
 
-            for (int i = 0; i < 3; ++i) {
-                plotView.Model.Axes.Add(xaxis[i]);
-                plotView.Model.InvalidatePlot(true);
-                plotView.Model.Series.Add(data[i]);
-                plotView.Model.InvalidatePlot(true);
+            for (int i = 0; i < 4; ++i) {
+                view.Model.Axes.Add(xaxis[i]);
+                view.Model.InvalidatePlot(true);
+                view.Model.Series.Add(data[i]);
+                view.Model.InvalidatePlot(true);
             }
-            baseModel.Series.Add(data[3]);
-            plotView.Model.InvalidatePlot(true);
+            view.Model.InvalidatePlot(true);
 
         }
 
@@ -177,15 +132,17 @@ namespace Analyzer
             // TODO: Сделать что-то ?
         }
 
-        public void IntervalComparePlot(StatCompareList compareList, int intervalNum, double maxTime)
+        public static PlotModel LostTimeComparePlot(int intervalNum = 0, double maxTime = -1)
         {
-            intervalModel = new PlotModel();
-            intervalModel.Title = "Потерянное время";
+            var model = new PlotModel
+            {
+                Title = "Потерянное время"
+            };
 
             //---  Init axis  ---//
             (var data, var xaxis) = InitDataAndXaxis();
 
-            yaxis = new LinearAxis();
+            var yaxis = new LinearAxis();
             yaxis.Position = AxisPosition.Left;
             yaxis.MajorGridlineStyle = LineStyle.Dot;
             yaxis.MinorGridlineStyle = LineStyle.Dot;
@@ -200,29 +157,30 @@ namespace Analyzer
             for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
                 intervals.Add(ViewController.CompareList.At(i).Interval.GetIntervalAt(intervalNum).Info);
 
-            for (int i = 0; i < compareList.GetCount(); ++i)
+            for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
             {
                 xaxis[0].Labels.Add("Кол-во процессоров: "
-                    + compareList.At(i).Info.nproc);
+                    + ViewController.CompareList.At(i).Info.nproc);
                 xaxis[1].Labels.Add("Время выполнения: "
-                    + compareList.At(i).Info.inter[0].times.exec_time.ToString("F3"));
+                    + ViewController.CompareList.At(i).Info.inter[0].times.exec_time.ToString("F3"));
                 xaxis[2].Labels.Add("Коэфф. эффективности: "
-                    + compareList.At(i).Info.inter[0].times.efficiency.ToString("F3"));
+                    + ViewController.CompareList.At(i).Info.inter[0].times.efficiency.ToString("F3"));
+                xaxis[3].Labels.Add("Файл: "
+                    + ViewController.CompareList.At(i).Info.inter[0].id.pname);
                 data[0].Items.Add(new ColumnItem(intervals[i].times.insuf_sys));
                 data[1].Items.Add(new ColumnItem(intervals[i].times.insuf_user));
                 data[2].Items.Add(new ColumnItem(intervals[i].times.idle));
                 data[3].Items.Add(new ColumnItem(intervals[i].times.comm));
             }
 
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < 4; ++i)
             {
-                intervalModel.Axes.Add(xaxis[i]);
-                intervalModel.Series.Add(data[i]);
+                model.Axes.Add(xaxis[i]);
+                model.Series.Add(data[i]);
             }
-            intervalModel.Series.Add(data[3]);
-            intervalModel.Axes.Add(yaxis);
+            model.Axes.Add(yaxis);
 
-            plotView.Model = intervalModel;
+            return model;
         }
 
     }

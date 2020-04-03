@@ -5,6 +5,7 @@ using Foundation;
 using System.Collections;
 using System.Collections.Generic;
 using CoreAnimation;
+using OxyPlot.Xamarin.Mac;
 
 namespace Analyzer
 {
@@ -12,12 +13,12 @@ namespace Analyzer
     public class IntervalCompareOutlineDelegate : NSOutlineViewDelegate
     {
         private const string CellIdentifier = "IntervalCell";
-        private PlotMaker plotMaker;
+        private PlotView plotView;
         private NSOutlineView outlineView;
         private double maxTime;
 
-        public IntervalCompareOutlineDelegate(NSOutlineView outlineView, PlotMaker plotMaker){
-            this.plotMaker = plotMaker;
+        public IntervalCompareOutlineDelegate(NSOutlineView outlineView, PlotView plotView){
+            this.plotView = plotView;
             this.outlineView = outlineView;
             maxTime = -1;
         }
@@ -25,7 +26,7 @@ namespace Analyzer
         public void SetMaxTime(double maxTime) => this.maxTime = maxTime;
 
         public override void SelectionDidChange(NSNotification notification)
-            => plotMaker.IntervalComparePlot(ViewController.CompareList, (int)outlineView.SelectedRow, maxTime);
+            => plotView.Model = PlotMaker.LostTimeComparePlot((int)outlineView.SelectedRow, maxTime);
 
         public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
         {
@@ -50,8 +51,8 @@ namespace Analyzer
 
                 view = new NSStackView()
                 {
-                    Layer = gradientLayer,
-                    WantsLayer = true,
+                    //Layer = gradientLayer,
+                    //WantsLayer = true,
                     AutoresizesSubviews = false
                 };
 

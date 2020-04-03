@@ -14,10 +14,11 @@ namespace Analyzer
         private NSAlert Alert;  // диалоговое окно для сообщений
         private NSAlert RemoveAlert;
         public static StatCompareList CompareList;  // static для доступа с другого ViewController'a
-        private PlotMaker PlotMaker;
         private nint YesButtonTag, NoButtonTag;
         private NSWindowController IntervalCompareController;
         private static NSStoryboard storyboard = NSStoryboard.FromName("Main", null);
+        private double plotMaxTime;
+        private bool firstTime;
 
         public ViewController(IntPtr handle) : base(handle)
         {
@@ -62,7 +63,7 @@ namespace Analyzer
             // Do any additional setup after loading the view.
             LoadStatList();
             InitDataInterView();
-
+            firstTime = true;
             Alert = new NSAlert();
 
             RemoveAlert = new NSAlert();
@@ -72,18 +73,35 @@ namespace Analyzer
                 "удалить выбранные статистики выполнения?";
 
             CompareList = new StatCompareList();
-            PlotMaker = new PlotMaker(plotView);
+            plotView.Model = new OxyPlot.PlotModel();
 
-            IntervalCompareButton.Enabled = false;
+            
             CompareSort.Enabled = false;
+            IntervalCompareButton.Enabled = false;
             CompareSort.RemoveAllItems();
             string[] CompareItems = { "Кол-во процессоров", "Потерянное время",
                 "Время выполнения",  "Коэф. эффективности"};
             CompareSort.AddItems(CompareItems);
 
             CompareSort.Activated += (object sender, EventArgs e)
-                => PlotMaker.SortBasePlot(CompareSort.TitleOfSelectedItem);
+                => PlotMaker.SortPlot(plotView, CompareSort.TitleOfSelectedItem,
+                    (int)CompareIntervalTree.SelectedRow);
 
+            var dataSource = new IntervalOutlineDataSource();
+            CompareIntervalTree.DataSource = dataSource;
+            CompareIntervalTree.Delegate = new IntervalCompareOutlineDelegate(CompareIntervalTree, plotView);
+
+            IntervalCompareButton.Activated += IntervalCompareButton_Activated;
+        }
+
+        private void IntervalCompareButton_Activated(object sender, EventArgs e)
+        {
+            if (IntervalCompareButton.State == NSCellStateValue.On)
+                CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width - 200, 0);
+            else { 
+                CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width, 0);
+                CompareIntervalTree.SelectRow(0, false);
+            }
         }
 
         public override NSObject RepresentedObject
@@ -162,6 +180,7 @@ namespace Analyzer
 
         partial void LoadStat(NSObject sender)
         {
+
             if (StatTableView.SelectedRowCount != 1) {
                 Alert.MessageText = "Пожалуйста, выберите одну " +
                     "запись для загрузки.";
@@ -191,7 +210,7 @@ namespace Analyzer
         }
 
         partial void CompareStat(NSObject sender)
-        {   
+        {
             var SelectedRowsArray = StatTableView.SelectedRows.ToArray();
             if (SelectedRowsArray.Length < 2)
             { 
@@ -200,45 +219,55 @@ namespace Analyzer
                 Alert.RunModal();
                 return;
             }
+            plotView.Model = null;
             CompareList.Clear();
             var StatDirs = ((StatTableDataSource)StatTableView.DataSource).StatDirs;
 
-            for (int i = 0; i < SelectedRowsArray.Length; ++i)
-                CompareList.Add(new Stat(StatDirs[(int)SelectedRowsArray[i]].ReadJson(),
-                    Path.GetDirectoryName(StatDirs[(int)SelectedRowsArray[i]].path)));
+            foreach (var i in SelectedRowsArray)
+                CompareList.Add(new Stat(StatDirs[(int)i].ReadJson(),
+                    Path.GetDirectoryName(StatDirs[(int)i].path)));
 
-            //---  Create controllet for interval comparison  ---//
-            IntervalCompareController = storyboard
-                .InstantiateControllerWithIdentifier("IntervalCompare") as NSWindowController;
-            IntervalCompareController.Window.Title = "Поинтервальное сравнение";
+            //---  Set CompareIntervalTree  ---//
+            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(-1);
+            ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals.Clear();
+            ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals
+                .Add(CompareList.List[0].Interval);
+            CompareIntervalTree.ReloadData();
+            CompareIntervalTree.ExpandItem(CompareIntervalTree.ItemAtRow(0), true);
+            CompareIntervalTree.SelectRow(0, false);
 
             //---  Hide label and set plot  ---//
             ChooseLabel.Hidden = true;
             CompareSort.Enabled = true;
             IntervalCompareButton.Enabled = true;
-            PlotMaker.BasePlot(CompareList);
+
+            plotMaxTime = plotView.Model.GetAxis("Time").ActualMaximum;
+            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(plotMaxTime);
 
             //--- Switch tab  ---//
             TabView.SelectAt(2);
+            if (firstTime) { 
+                CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width - 200, 0);
+                firstTime = false;
+            }
+
         }
 
         partial void CompareReset(NSObject sender)
         {
-            PlotMaker.ResetPlot();
+            plotView.Model = null;
             CompareSort.Enabled = false;
-            IntervalCompareButton.Enabled = false;
             ChooseLabel.Hidden = false;
+            IntervalCompareButton.Enabled = false;
+            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(-1);
+            ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals.Clear();
+            CompareIntervalTree.ReloadData();
+            CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width, 0);
         }
 
         partial void CompareBack(NSObject sender)
         {
             //TODO: Сделать нормальный "Назад", наверно
-        }
-
-
-        partial void IntervalCompare(NSObject sender)
-        {
-            IntervalCompareController.ShowWindow(sender);
         }
 
     }

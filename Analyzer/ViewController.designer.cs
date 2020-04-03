@@ -16,7 +16,13 @@ namespace Analyzer
 		AppKit.NSTextField ChooseLabel { get; set; }
 
 		[Outlet]
+		AppKit.NSOutlineView CompareIntervalTree { get; set; }
+
+		[Outlet]
 		AppKit.NSPopUpButton CompareSort { get; set; }
+
+		[Outlet]
+		AppKit.NSSplitView CompareSplitView { get; set; }
 
 		[Outlet]
 		AppKit.NSTextView InterText { get; set; }
@@ -73,6 +79,16 @@ namespace Analyzer
 				ChooseLabel = null;
 			}
 
+			if (CompareIntervalTree != null) {
+				CompareIntervalTree.Dispose ();
+				CompareIntervalTree = null;
+			}
+
+			if (CompareSplitView != null) {
+				CompareSplitView.Dispose ();
+				CompareSplitView = null;
+			}
+
 			if (CompareSort != null) {
 				CompareSort.Dispose ();
 				CompareSort = null;
@@ -81,6 +97,11 @@ namespace Analyzer
 			if (InterText != null) {
 				InterText.Dispose ();
 				InterText = null;
+			}
+
+			if (IntervalCompareButton != null) {
+				IntervalCompareButton.Dispose ();
+				IntervalCompareButton = null;
 			}
 
 			if (InterView != null) {
@@ -106,11 +127,6 @@ namespace Analyzer
 			if (TabView != null) {
 				TabView.Dispose ();
 				TabView = null;
-			}
-
-			if (IntervalCompareButton != null) {
-				IntervalCompareButton.Dispose ();
-				IntervalCompareButton = null;
 			}
 		}
 	}

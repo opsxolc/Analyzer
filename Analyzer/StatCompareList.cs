@@ -16,14 +16,22 @@ namespace Analyzer
         public void Add(Stat stat)
         {
             string res1, res2;
-            List.Add(stat);
-            for (int i = 0; i < List.Count - 1; ++i)
+            //List.Add(stat);
+            string json = stat.ToJson(); 
+            for (int i = 0; i < List.Count; ++i)
             {
-                LibraryImport.stat_intersect_(List[i].ToJson(),
-                    List[i + 1].ToJson(), out res1, out res2);
-                List[i] = new Stat(res1, List[i].Dir);
-                List[i + 1] = new Stat(res2, List[i + 1].Dir);
+                //Console.WriteLine("Going to LibraryImport");
+                //Console.WriteLine("STAT1: \n" + List[i].Interval + "\n");
+                //Console.WriteLine("STAT2: \n" + new Stat(json, "").Interval + "\n");
+                LibraryImport.stat_intersect_(List[i].ToJson(), json, out res1, out res2);
+                //Console.WriteLine("LibraryImport OK");
+                //Console.WriteLine("RES1: \n" + new Stat(res1, "").Interval + "\n");
+                //Console.WriteLine("RES2: \n" + new Stat(res2, "").Interval + "\n");
+                List[i].ChangeJson(res1);
+                json = res2;
             }
+            stat.ChangeJson(json);
+            List.Add(stat);
         }
 
         public Stat At(int i)
