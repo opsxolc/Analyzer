@@ -9,10 +9,8 @@ using OxyPlot.Xamarin.Mac;
 namespace Analyzer
 {
 
-    public class PlotMaker  // TODO: Разобраться с конструктором и compareList'ом (нужен рефакторинг)
+    public class PlotMaker 
     {
-
-        //private static LinearAxis yaxis;
 
         private static (List<ColumnSeries> data, List<CategoryAxis> xaxis) InitDataAndXaxis()
         {
@@ -71,32 +69,13 @@ namespace Analyzer
             view.Model.Axes.Clear();
 
             (var data, var xaxis) = InitDataAndXaxis();
-            var compareList = ViewController.CompareList.List;
-            switch (par)
-            {
-                case "Кол-во процессоров":
-                    compareList.Sort((Stat st1, Stat st2) => st1.Info.nproc - st2.Info.nproc);
-                    break;
-                case "Потерянное время":
-                    compareList.Sort((Stat st1, Stat st2) =>
-                         (int) (100 * (st1.Info.inter[intervalNum].times.lost_time
-                            - st2.Info.inter[intervalNum].times.lost_time)));
-                    break;
-                case "Время выполнения":
-                    compareList.Sort((Stat st1, Stat st2) =>
-                        (int)(100 * (st1.Info.inter[intervalNum].times.exec_time
-                            - st2.Info.inter[intervalNum].times.exec_time)));
-                    break;
-                case "Коэф. эффективности":
-                    compareList.Sort((Stat st1, Stat st2) =>
-                        (int)(100 * (st1.Info.inter[intervalNum].times.efficiency
-                            - st2.Info.inter[intervalNum].times.efficiency)));
-                    break;
-            }
 
-            List<IntervalJson> intervals = new List<IntervalJson>();
-            for (int i = 0; i < compareList.Count; ++i)
-                intervals.Add(compareList[i].Interval.GetIntervalAt(intervalNum).Info);
+            ViewController.CompareList.Sort(par, intervalNum);
+            var compareList = ViewController.CompareList.List;
+
+            List<IntervalJson> intervals = ViewController.CompareList.IntervalsList[intervalNum];
+            //for (int i = 0; i < compareList.Count; ++i)
+            //    intervals.Add(compareList[i].Interval.GetIntervalAt(intervalNum).Info);
 
             for (int i = 0; i < compareList.Count; ++i)
             {
@@ -134,6 +113,7 @@ namespace Analyzer
 
         public static PlotModel LostTimeComparePlot(int intervalNum = 0, double maxTime = -1)
         {
+            //Console.WriteLine("Making plot for intervalNum: " + intervalNum);
             var model = new PlotModel
             {
                 Title = "Потерянное время"
@@ -153,9 +133,7 @@ namespace Analyzer
                 yaxis.Maximum = maxTime;
             yaxis.Key = "Time";
 
-            List<IntervalJson> intervals = new List<IntervalJson>();
-            for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
-                intervals.Add(ViewController.CompareList.At(i).Interval.GetIntervalAt(intervalNum).Info);
+            List<IntervalJson> intervals = ViewController.CompareList.IntervalsList[intervalNum];
 
             for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
             {

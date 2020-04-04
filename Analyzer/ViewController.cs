@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using AppKit;
+using CoreGraphics;
 using Foundation;
 
 namespace Analyzer
@@ -84,9 +85,17 @@ namespace Analyzer
             CompareSort.AddItems(CompareItems);
 
             CompareSort.Activated += (object sender, EventArgs e)
-                => PlotMaker.SortPlot(plotView, CompareSort.TitleOfSelectedItem,
-                    (int)CompareIntervalTree.SelectedRow);
+                =>
+            {
+                // TODO: Мб, для этого есть нормальное решение?
+                var selectedRow = (int)CompareIntervalTree.SelectedRow;
+                PlotMaker.SortPlot(plotView, CompareSort.TitleOfSelectedItem,
+                selectedRow);
+                CompareIntervalTree.ReloadData();
+                CompareIntervalTree.SelectRow(selectedRow, false);
+            };
 
+            CompareIntervalTree.IntercellSpacing = new CGSize(10, 0);
             var dataSource = new IntervalOutlineDataSource();
             CompareIntervalTree.DataSource = dataSource;
             CompareIntervalTree.Delegate = new IntervalCompareOutlineDelegate(CompareIntervalTree, plotView);
@@ -226,23 +235,23 @@ namespace Analyzer
             foreach (var i in SelectedRowsArray)
                 CompareList.Add(new Stat(StatDirs[(int)i].ReadJson(),
                     Path.GetDirectoryName(StatDirs[(int)i].path)));
+            CompareList.BuildIntervalsList();
+
+            //---  Hide label and set plot  ---//
+            ChooseLabel.Hidden = true;
+            CompareSort.Enabled = true;
+            IntervalCompareButton.Enabled = true;
+            plotView.Model = PlotMaker.LostTimeComparePlot();
+            plotMaxTime = plotView.Model.GetAxis("Time").ActualMaximum;
+            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(plotMaxTime);
 
             //---  Set CompareIntervalTree  ---//
-            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(-1);
             ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals.Clear();
             ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals
                 .Add(CompareList.List[0].Interval);
             CompareIntervalTree.ReloadData();
             CompareIntervalTree.ExpandItem(CompareIntervalTree.ItemAtRow(0), true);
             CompareIntervalTree.SelectRow(0, false);
-
-            //---  Hide label and set plot  ---//
-            ChooseLabel.Hidden = true;
-            CompareSort.Enabled = true;
-            IntervalCompareButton.Enabled = true;
-
-            plotMaxTime = plotView.Model.GetAxis("Time").ActualMaximum;
-            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(plotMaxTime);
 
             //--- Switch tab  ---//
             TabView.SelectAt(2);
