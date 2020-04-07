@@ -37,6 +37,9 @@ namespace Analyzer
                     LabelFormatString = "{0:0.###}",
                     IsStacked = true
                 });
+
+                data[i].MouseDown += (object sender, OxyMouseDownEventArgs e)
+                    => Model_MouseDown(sender, e);
             }
 
             xaxis[0].MajorGridlineStyle = LineStyle.Solid;
@@ -119,6 +122,7 @@ namespace Analyzer
                 Title = "Потерянное время"
             };
 
+
             //---  Init axis  ---//
             (var data, var xaxis) = InitDataAndXaxis();
 
@@ -161,5 +165,15 @@ namespace Analyzer
             return model;
         }
 
+        private static void Model_MouseDown(object sender, OxyMouseDownEventArgs e)
+        {
+            var columns = sender as ColumnSeries;
+            var model = columns.PlotModel;
+            Axis xaxis, yaxis;
+            model.GetAxesFromPoint(e.Position, out xaxis, out yaxis);
+            var nearest = columns.GetNearestPoint(e.Position, false);
+            var item = nearest.Item as ColumnItem;
+            Console.WriteLine(ViewController.CompareList.At((int)nearest.DataPoint.X).Info.inter[0].times.synch);
+        }
     }
 }

@@ -68,5 +68,6 @@ namespace Analyzer
         public double gpu_time_lost;
         public long nproc;
         public long threadsOfAllProcs;
+    
     }
 }

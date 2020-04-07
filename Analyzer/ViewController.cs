@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using AppKit;
 using CoreGraphics;
 using Foundation;
+using Newtonsoft.Json;
 
 namespace Analyzer
 {
@@ -16,10 +17,12 @@ namespace Analyzer
         private NSAlert RemoveAlert;
         public static StatCompareList CompareList;  // static для доступа с другого ViewController'a
         private nint YesButtonTag, NoButtonTag;
-        private NSWindowController IntervalCompareController;
         private static NSStoryboard storyboard = NSStoryboard.FromName("Main", null);
+        private NSWindowController popoverWindowController;
+        private PopoverController popoverViewController;
         private double plotMaxTime;
         private bool firstTime;
+        private NSPopover helpPopover;
 
         public ViewController(IntPtr handle) : base(handle)
         {
@@ -65,6 +68,8 @@ namespace Analyzer
             LoadStatList();
             InitDataInterView();
             firstTime = true;
+
+            //---  Init alerts  ---//
             Alert = new NSAlert();
 
             RemoveAlert = new NSAlert();
@@ -76,7 +81,41 @@ namespace Analyzer
             CompareList = new StatCompareList();
             plotView.Model = new OxyPlot.PlotModel();
 
-            
+            //---  Init popover  ---//
+            popoverWindowController = storyboard.InstantiateControllerWithIdentifier("Popover") as NSWindowController;
+            popoverViewController = popoverWindowController.ContentViewController as PopoverController;
+
+            //---  Init help button  ---//
+            NSButton helpIntervalCompare = new NSButton
+            {
+                BezelStyle = NSBezelStyle.HelpButton,
+                Title = "",
+                BezelColor = NSColor.White
+            };
+            helpIntervalCompare.SetButtonType(NSButtonType.MomentaryPushIn);
+            helpIntervalCompare.SetFrameSize(helpIntervalCompare.FittingSize);
+            helpIntervalCompare.SetFrameOrigin(new CGPoint(TableHeader.Frame.Width
+                - helpIntervalCompare.FittingSize.Width, 2));
+            helpIntervalCompare.AutoresizingMask = NSViewResizingMask.MinXMargin;
+
+            //---  Init help popover  ---//
+            var helpWindowController = storyboard.InstantiateControllerWithIdentifier("Popover") as NSWindowController;
+            var helpViewController = helpWindowController.ContentViewController as PopoverController;
+            helpPopover = new NSPopover
+            {
+                ContentSize = new CGSize(200, 200),
+                Behavior = NSPopoverBehavior.Transient,
+                Animates = true,
+                ContentViewController = helpViewController
+            };
+            //TODO: Написать нормальную помощь
+            helpIntervalCompare.Activated += (object sender, EventArgs e)
+                => helpPopover.Show(new CGRect(helpIntervalCompare.Frame.Location, new CGSize(200, 200)),
+                   TableHeader, NSRectEdge.MaxYEdge);
+
+            TableHeader.AddSubview(helpIntervalCompare);
+
+
             CompareSort.Enabled = false;
             IntervalCompareButton.Enabled = false;
             CompareSort.RemoveAllItems();
@@ -101,6 +140,15 @@ namespace Analyzer
             CompareIntervalTree.Delegate = new IntervalCompareOutlineDelegate(CompareIntervalTree, plotView);
 
             IntervalCompareButton.Activated += IntervalCompareButton_Activated;
+        }
+
+        private void HelpIntervalCompare_Activated(object sender, EventArgs e)
+        {
+
+            popoverWindowController.LoadWindow();
+            helpPopover.ContentViewController = popoverWindowController.ContentViewController;
+            helpPopover.Show(new CGRect(new CGPoint(0, 0), new CGSize(100, 100)),
+                TableHeader.TableView, NSRectEdge.MaxXEdge);
         }
 
         private void IntervalCompareButton_Activated(object sender, EventArgs e)
@@ -232,9 +280,18 @@ namespace Analyzer
             CompareList.Clear();
             var StatDirs = ((StatTableDataSource)StatTableView.DataSource).StatDirs;
 
-            foreach (var i in SelectedRowsArray)
-                CompareList.Add(new Stat(StatDirs[(int)i].ReadJson(),
-                    Path.GetDirectoryName(StatDirs[(int)i].path)));
+            try { 
+                foreach (var i in SelectedRowsArray)
+                    CompareList.Add(new Stat(StatDirs[(int)i].ReadJson(),
+                        Path.GetDirectoryName(StatDirs[(int)i].path)));
+            } catch (Exception e)
+            {
+                Console.WriteLine("Got one!\n" + e);
+                CompareList.Clear();
+                foreach (var i in SelectedRowsArray)
+                    CompareList.Add(new Stat(StatDirs[(int)i].ReadJson(),
+                        Path.GetDirectoryName(StatDirs[(int)i].path)));
+            }
             CompareList.BuildIntervalsList();
 
             //---  Hide label and set plot  ---//
@@ -277,6 +334,14 @@ namespace Analyzer
         partial void CompareBack(NSObject sender)
         {
             //TODO: Сделать нормальный "Назад", наверно
+
+            NSPopover popover = new NSPopover();
+            popover.ContentSize = new CGSize(100, 100);
+            popover.Behavior = NSPopoverBehavior.Transient;
+            popover.Animates = true;
+            popover.ContentViewController = popoverViewController;
+
+            popover.Show(new CGRect(new CGPoint(0, 0), new CGSize(100, 100)), View, NSRectEdge.MaxXEdge);
         }
 
     }

@@ -85,7 +85,6 @@
     <Reference Include="OxyPlot.Xamarin.Mac">
       <HintPath>..\packages\OxyPlot.Xamarin.Mac.2.0.0-preview0001\lib\xamarinmac20\OxyPlot.Xamarin.Mac.dll</HintPath>
     </Reference>
-    <Reference Include="System.Drawing.Common.dll" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json" />
@@ -126,11 +125,11 @@
     <Compile Include="StatDir.cs" />
     <Compile Include="StatCompareList.cs" />
     <Compile Include="PlotMaker.cs" />
-    <Compile Include="IntervalCompareViewController.cs" />
-    <Compile Include="IntervalCompareViewController.designer.cs">
-      <DependentUpon>IntervalCompareViewController.cs</DependentUpon>
-    </Compile>
     <Compile Include="IntervalCompareOutlineDelegate.cs" />
+    <Compile Include="PopoverController.cs" />
+    <Compile Include="PopoverController.designer.cs">
+      <DependentUpon>PopoverController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />

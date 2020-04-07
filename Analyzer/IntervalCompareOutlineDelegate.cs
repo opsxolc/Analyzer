@@ -36,24 +36,16 @@ namespace Analyzer
             // If the returned view is null, you instance up a new view
             // If a non-null view is returned, you modify it enough to reflect the new data
 
-
-            // TODO: Получать и изменять готовый view
-            NSClipView view = null;
-                //(NSStackView)outlineView.MakeView(CellIdentifier, this);
+            NSClipView view = (NSClipView)outlineView.MakeView(CellIdentifier, this);
             NSTextField exprView = (NSTextField)(view == null ? null : view.Subviews[0]);
+            NSBox line = (NSBox)((view == null) ? null : view.Subviews[1]);
 
             // Cast item
             var interval = item as Interval;
-            var compareList = ViewController.CompareList.List;
             var intervals = ViewController.CompareList.IntervalsList[interval.Row];
-
-            NSTableView table = new NSTableView();
 
             if (view == null)
             {
-                //var interStacks = new List<NSStackView>();
-                //var interFields = new List<NSTextField>();
-
                 view = new NSClipView
                 {
                     Identifier = CellIdentifier,
@@ -61,8 +53,6 @@ namespace Analyzer
                     DrawsBackground = false,
                     AutoresizingMask = NSViewResizingMask.WidthSizable
                 };
-
-                //view.SetFrameSize(view.FittingSize);
 
                 exprView = new NSTextField
                 {
@@ -75,60 +65,65 @@ namespace Analyzer
                 };
 
                 exprView.RotateByAngle(-90);
-                exprView.StringValue = interval.Info.id.expr.ToString();
 
-                exprView.SetFrameOrigin(new CGPoint(0, 0));
+                exprView.SetFrameOrigin(new CGPoint(0, 2));
                 exprView.SetFrameSize(new CGSize(13, 28));
-                view.AddSubview(exprView);
-                nfloat offset = 0;
-                for (var i = intervals.Count - 1; i >= 0; --i)
+
+                line = new NSBox
                 {
-                    var gradientLayer = MakeGradLayer(intervals[i]);
+                    BoxType = NSBoxType.NSBoxSeparator
+                };
 
-                    var interStack = new NSStackView
-                    {
-                        Orientation = NSUserInterfaceLayoutOrientation.Vertical,
-                        //Layer = gradientLayer,
-                        WantsLayer = true,
-                        AutoresizesSubviews = false
-                    };
+                line.SetFrameSize(new CGSize(2, 23));
+                line.SetFrameOrigin(new CGPoint(exprView.Frame.Width + 3, 5));
 
-                     var val = new NSTextField
-                    {
-                        Alignment = NSTextAlignment.Center,
-                        Selectable = false,
-                        Editable = false,
-                        DrawsBackground = false,
-                        Bordered = false,
-                        BackgroundColor = NSColor.Clear,
-                        WantsLayer = true
-                    };
+                view.AddSubview(exprView);
+                view.AddSubview(line);
+            } else
+                for (int i = view.Subviews.Length - 1; i > 1; --i)
+                    view.Subviews[i].RemoveFromSuperview();
 
-                    val.StringValue = intervals[i].times.exec_time.ToString("F1")
-                        + "\n" + intervals[i].times.efficiency.ToString("F1");
-                    var valSize = val.FittingSize;
-                    gradientLayer.Frame = new CGRect(new CGPoint(0, 0), val.FittingSize);
-                    interStack.Layer.InsertSublayerBelow(gradientLayer, val.Layer);
-                    interStack.Alignment = NSLayoutAttribute.CenterY;
-                    interStack.SetFrameSize(val.FittingSize);
-                    interStack.AddView(val, NSStackViewGravity.Top);
+            //---  Создаем ячейки для интервалов  ---//
+            nfloat offset = 0;
+            for (var i = intervals.Count - 1; i >= 0; --i)
+            {
+                var gradientLayer = MakeGradLayer(intervals[i]);
 
-                    offset += val.FittingSize.Width;
-                    interStack.AutoresizingMask = NSViewResizingMask.MinXMargin;
-                    interStack.SetFrameOrigin(new CGPoint(view.Bounds.Width - offset, 0));
-                    view.AddSubview(interStack);
-                    
-                    //interStacks.Add(interStack);
-                    //interFields.Add(val);
-                }
+                var interStack = new NSStackView
+                {
+                    Orientation = NSUserInterfaceLayoutOrientation.Vertical,
+                    WantsLayer = true,
+                    AutoresizesSubviews = false
+                };
 
+                var val = new NSTextField
+                {
+                    Alignment = NSTextAlignment.Center,
+                    Selectable = false,
+                    Editable = false,
+                    DrawsBackground = false,
+                    Bordered = false,
+                    BackgroundColor = NSColor.Clear,
+                    WantsLayer = true
+                };
 
-                //---  Добавляем SubViews  ---//
-                //view.AddView(interStacks[0], NSStackViewGravity.Trailing);
+                val.StringValue = intervals[i].times.exec_time.ToString("F1")
+                    + "\n" + intervals[i].times.efficiency.ToString("F1");
+                gradientLayer.Frame = new CGRect(new CGPoint(0, 0), val.FittingSize);
+                interStack.Layer.InsertSublayerBelow(gradientLayer, val.Layer);
+                interStack.Alignment = NSLayoutAttribute.CenterY;
+                interStack.SetFrameSize(val.FittingSize);
+                interStack.AddView(val, NSStackViewGravity.Top);
 
+                offset += val.FittingSize.Width;
+                interStack.AutoresizingMask = NSViewResizingMask.MinXMargin;
+                interStack.SetFrameOrigin(new CGPoint(view.Bounds.Width - offset, 0));
+                view.AddSubview(interStack);
             }
 
-            
+            //---  Устанавливаем значение Expr  ---//
+            exprView.StringValue = interval.Info.id.expr.ToString();
+
             return view;
         }
 
@@ -145,7 +140,7 @@ namespace Analyzer
             if (inter.times.insuf_sys >= 0.2 * maxTime)
                 colors.Add(OxyColors.Pink.ToCGColor());
             if (colors.Count == 1)
-                colors.Add(OxyColors.Snow.ToCGColor());
+                colors.Add(colors[0]);
             gradientLayer.Colors = colors.ToArray();
             gradientLayer.StartPoint = new CGPoint(.0, 1.0);
             gradientLayer.EndPoint = new CGPoint(.0, .0);

@@ -43,6 +43,9 @@ namespace Analyzer
 		AppKit.NSTableView StatTableView { get; set; }
 
 		[Outlet]
+		AppKit.NSTableHeaderView TableHeader { get; set; }
+
+		[Outlet]
 		AppKit.NSTabView TabView { get; set; }
 
 		[Action ("CloseButton:")]
@@ -79,19 +82,24 @@ namespace Analyzer
 				ChooseLabel = null;
 			}
 
+			if (TableHeader != null) {
+				TableHeader.Dispose ();
+				TableHeader = null;
+			}
+
 			if (CompareIntervalTree != null) {
 				CompareIntervalTree.Dispose ();
 				CompareIntervalTree = null;
 			}
 
-			if (CompareSplitView != null) {
-				CompareSplitView.Dispose ();
-				CompareSplitView = null;
-			}
-
 			if (CompareSort != null) {
 				CompareSort.Dispose ();
 				CompareSort = null;
+			}
+
+			if (CompareSplitView != null) {
+				CompareSplitView.Dispose ();
+				CompareSplitView = null;
 			}
 
 			if (InterText != null) {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Analyzer
 {
@@ -25,7 +26,7 @@ namespace Analyzer
         public void Add(Stat stat)
         {
             string res1, res2;
-            string json = stat.ToJson(); 
+            string json = stat.ToJson();
             for (int i = 0; i < List.Count; ++i)
             {
                 // TODO: Починить тупую ошибку с test_time
