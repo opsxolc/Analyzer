@@ -12,9 +12,15 @@ namespace Analyzer
 	[Register ("PopoverController")]
 	partial class PopoverController
 	{
+		[Outlet]
+		AppKit.NSTextField ContentLabel { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (ContentLabel != null) {
+				ContentLabel.Dispose ();
+				ContentLabel = null;
+			}
 		}
 	}
 }

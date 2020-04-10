@@ -4,13 +4,16 @@ using System.Linq;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using CoreGraphics;
 using OxyPlot.Xamarin.Mac;
+using AppKit;
 
 namespace Analyzer
 {
 
     public class PlotMaker 
     {
+        public static CGPoint clickPoint = new CGPoint(0,0);
 
         private static (List<ColumnSeries> data, List<CategoryAxis> xaxis) InitDataAndXaxis()
         {
@@ -136,7 +139,7 @@ namespace Analyzer
             if (maxTime > 0)
                 yaxis.Maximum = maxTime;
             yaxis.Key = "Time";
-
+             
             List<IntervalJson> intervals = ViewController.CompareList.IntervalsList[intervalNum];
 
             for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
@@ -169,11 +172,22 @@ namespace Analyzer
         {
             var columns = sender as ColumnSeries;
             var model = columns.PlotModel;
-            Axis xaxis, yaxis;
-            model.GetAxesFromPoint(e.Position, out xaxis, out yaxis);
             var nearest = columns.GetNearestPoint(e.Position, false);
-            var item = nearest.Item as ColumnItem;
-            Console.WriteLine(ViewController.CompareList.At((int)nearest.DataPoint.X).Info.inter[0].times.synch);
+            Console.WriteLine(columns.FillColor);
+            var windowController = ViewController.storyboard.InstantiateControllerWithIdentifier("CommPopover") as NSWindowController;
+            //var viewController = windowController.ContentViewController;
+            // TODO: Сделать switch
+            //viewController.SetCommunicationContent((int)nearest.DataPoint.X, 0);
+            var popover = new NSPopover
+            {
+                ContentSize = new CGSize(220, 180),
+                Behavior = NSPopoverBehavior.Transient,
+                Animates = true,
+                ContentViewController = windowController.ContentViewController
+            };
+            
+            popover.Show(new CGRect(clickPoint, new CGSize(1, 1)),
+                   model.PlotView as PlotView, NSRectEdge.MinXEdge);
         }
     }
 }

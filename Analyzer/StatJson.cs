@@ -10,6 +10,7 @@ namespace Analyzer
         public static string GetJson(StatJson stat) => JsonConvert.SerializeObject(stat);
     }
 
+    // TODO: Получать попроцессорные значения
     public struct StatJson
     {
         public int nproc;
@@ -28,6 +29,17 @@ namespace Analyzer
     {
         public IdentJson id;
         public InterTimesJson times;
+        public List<ColOpJson> col_op;
+    }
+
+    public struct ColOpJson
+    {
+        public double ncall;
+        public double comm;
+        public double real_comm;
+        public double synch;
+        public double time_var;
+        public double overlap;
     }
 
     public struct IdentJson

@@ -19,5 +19,16 @@ namespace Analyzer
             Console.WriteLine("Loaded");
         }
 
+        // TODO: Реализовать функции, устанавливающие вид поповера
+        public void SetCommunicationContent(int statNum, int interNum)
+        {
+            ContentLabel.StringValue = "Communication\n" + statNum + " " + interNum;
+        }
+
+        public void ResetContent(int statNum, int interNum)
+        {
+            ContentLabel.StringValue = "Communication\n" + statNum + " " + interNum;
+        }
+
     }
 }

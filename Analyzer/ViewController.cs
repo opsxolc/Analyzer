@@ -17,12 +17,18 @@ namespace Analyzer
         private NSAlert RemoveAlert;
         public static StatCompareList CompareList;  // static для доступа с другого ViewController'a
         private nint YesButtonTag, NoButtonTag;
-        private static NSStoryboard storyboard = NSStoryboard.FromName("Main", null);
+        public static NSStoryboard storyboard = NSStoryboard.FromName("Main", null);
         private NSWindowController popoverWindowController;
         private PopoverController popoverViewController;
         private double plotMaxTime;
         private bool firstTime;
         private NSPopover helpPopover;
+
+        public override void MouseDown(NSEvent theEvent)
+        {
+            PlotMaker.clickPoint = plotView.ConvertPointFromView(theEvent.LocationInWindow, null);
+            base.MouseDown(theEvent);
+        }
 
         public ViewController(IntPtr handle) : base(handle)
         {
@@ -142,15 +148,6 @@ namespace Analyzer
             IntervalCompareButton.Activated += IntervalCompareButton_Activated;
         }
 
-        private void HelpIntervalCompare_Activated(object sender, EventArgs e)
-        {
-
-            popoverWindowController.LoadWindow();
-            helpPopover.ContentViewController = popoverWindowController.ContentViewController;
-            helpPopover.Show(new CGRect(new CGPoint(0, 0), new CGSize(100, 100)),
-                TableHeader.TableView, NSRectEdge.MaxXEdge);
-        }
-
         private void IntervalCompareButton_Activated(object sender, EventArgs e)
         {
             if (IntervalCompareButton.State == NSCellStateValue.On)
@@ -258,8 +255,9 @@ namespace Analyzer
             if (StatTableView.SelectedRowCount == 0 || RemoveAlert.RunModal() != YesButtonTag)
                 return;
             var dataSource = (StatTableDataSource)StatTableView.DataSource;
-            foreach (var row in StatTableView.SelectedRows) { 
-                StatDir statDir = dataSource.StatDirs[(int)row];
+            var selectedRows = StatTableView.SelectedRows.ToArray();
+            for (int i = selectedRows.Length - 1; i >=0; --i) { 
+                StatDir statDir = dataSource.StatDirs[(int)selectedRows[i]];
                 Directory.Delete(StatDir.StatDirPath + '/' + statDir.hash, true);
                 ((StatTableDataSource)StatTableView.DataSource).StatDirs.Remove(statDir);
             }
