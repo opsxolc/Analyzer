@@ -109,14 +109,14 @@ namespace Analyzer
             var helpViewController = helpWindowController.ContentViewController as PopoverController;
             helpPopover = new NSPopover
             {
-                ContentSize = new CGSize(200, 200),
+                ContentSize = new CGSize(200, 180),
                 Behavior = NSPopoverBehavior.Transient,
                 Animates = true,
                 ContentViewController = helpViewController
             };
             //TODO: Написать нормальную помощь
             helpIntervalCompare.Activated += (object sender, EventArgs e)
-                => helpPopover.Show(new CGRect(helpIntervalCompare.Frame.Location, new CGSize(200, 200)),
+                => helpPopover.Show(new CGRect(helpIntervalCompare.Frame.Location, new CGSize(200, 180)),
                    TableHeader, NSRectEdge.MaxYEdge);
 
             TableHeader.AddSubview(helpIntervalCompare);

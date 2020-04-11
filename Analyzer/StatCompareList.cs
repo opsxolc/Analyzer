@@ -8,6 +8,7 @@ namespace Analyzer
     {
         public readonly List<Stat> List;  // список сравнения
         public readonly List<List<IntervalJson>> IntervalsList;
+        public readonly char c = '1';
 
         public StatCompareList()
         {

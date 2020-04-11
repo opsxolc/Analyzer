@@ -130,6 +130,10 @@
     <Compile Include="PopoverController.designer.cs">
       <DependentUpon>PopoverController.cs</DependentUpon>
     </Compile>
+    <Compile Include="CommPopoverController.cs" />
+    <Compile Include="CommPopoverController.designer.cs">
+      <DependentUpon>CommPopoverController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />

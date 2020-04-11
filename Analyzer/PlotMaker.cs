@@ -15,7 +15,7 @@ namespace Analyzer
     {
         public static CGPoint clickPoint = new CGPoint(0,0);
 
-        private static (List<ColumnSeries> data, List<CategoryAxis> xaxis) InitDataAndXaxis()
+        private static (List<ColumnSeries> data, List<CategoryAxis> xaxis) InitDataAndXaxis(int interNum)
         {
             List<CategoryAxis> xaxis = new List<CategoryAxis>();
             List<ColumnSeries> data = new List<ColumnSeries>();
@@ -42,7 +42,7 @@ namespace Analyzer
                 });
 
                 data[i].MouseDown += (object sender, OxyMouseDownEventArgs e)
-                    => Model_MouseDown(sender, e);
+                    => Model_MouseDown(sender, e, interNum);
             }
 
             xaxis[0].MajorGridlineStyle = LineStyle.Solid;
@@ -53,9 +53,6 @@ namespace Analyzer
 
             data[1].FillColor = OxyColors.Orchid;
             data[1].Title = "Недостаточный параллелизм (user)";
-            //data[0].MouseDown += (object sender, OxyMouseDownEventArgs e)
-            //    => Console.WriteLine("data[0] MouseDown "
-            //    + e.ClickCount + " " + e.Position);
 
             data[2].FillColor = OxyColors.LightSkyBlue;
             data[2].Title = "Простои";
@@ -74,14 +71,12 @@ namespace Analyzer
             var yaxis = view.Model.GetAxis("Time");
             view.Model.Axes.Clear();
 
-            (var data, var xaxis) = InitDataAndXaxis();
+            (var data, var xaxis) = InitDataAndXaxis(intervalNum);
 
             ViewController.CompareList.Sort(par, intervalNum);
             var compareList = ViewController.CompareList.List;
 
             List<IntervalJson> intervals = ViewController.CompareList.IntervalsList[intervalNum];
-            //for (int i = 0; i < compareList.Count; ++i)
-            //    intervals.Add(compareList[i].Interval.GetIntervalAt(intervalNum).Info);
 
             for (int i = 0; i < compareList.Count; ++i)
             {
@@ -119,7 +114,6 @@ namespace Analyzer
 
         public static PlotModel LostTimeComparePlot(int intervalNum = 0, double maxTime = -1)
         {
-            //Console.WriteLine("Making plot for intervalNum: " + intervalNum);
             var model = new PlotModel
             {
                 Title = "Потерянное время"
@@ -127,7 +121,7 @@ namespace Analyzer
 
 
             //---  Init axis  ---//
-            (var data, var xaxis) = InitDataAndXaxis();
+            (var data, var xaxis) = InitDataAndXaxis(intervalNum);
 
             var yaxis = new LinearAxis();
             yaxis.Position = AxisPosition.Left;
@@ -168,22 +162,30 @@ namespace Analyzer
             return model;
         }
 
-        private static void Model_MouseDown(object sender, OxyMouseDownEventArgs e)
+        private static void Model_MouseDown(object sender, OxyMouseDownEventArgs e, int interNum)
         {
             var columns = sender as ColumnSeries;
             var model = columns.PlotModel;
             var nearest = columns.GetNearestPoint(e.Position, false);
-            Console.WriteLine(columns.FillColor);
-            var windowController = ViewController.storyboard.InstantiateControllerWithIdentifier("CommPopover") as NSWindowController;
-            //var viewController = windowController.ContentViewController;
-            // TODO: Сделать switch
-            //viewController.SetCommunicationContent((int)nearest.DataPoint.X, 0);
+            var name = "";
+
+            if (columns.FillColor == OxyColors.GreenYellow)
+                name = "CommPopover";
+
+            if (name == "")
+                return;
+
+            var windowController = ViewController.storyboard
+                .InstantiateControllerWithIdentifier("CommPopover") as NSWindowController;
+            var viewController = windowController.ContentViewController as CommPopoverController;
+
+            viewController.Init((int)nearest.DataPoint.X, interNum);
             var popover = new NSPopover
             {
                 ContentSize = new CGSize(220, 180),
                 Behavior = NSPopoverBehavior.Transient,
                 Animates = true,
-                ContentViewController = windowController.ContentViewController
+                ContentViewController = viewController
             };
             
             popover.Show(new CGRect(clickPoint, new CGSize(1, 1)),

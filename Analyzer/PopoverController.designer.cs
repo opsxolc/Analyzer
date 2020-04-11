@@ -13,13 +13,21 @@ namespace Analyzer
 	partial class PopoverController
 	{
 		[Outlet]
-		AppKit.NSTextField ContentLabel { get; set; }
+		AppKit.NSTextField IntervalCell { get; set; }
+
+		[Outlet]
+		AppKit.NSStackView IntervalCellStack { get; set; }
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (ContentLabel != null) {
-				ContentLabel.Dispose ();
-				ContentLabel = null;
+			if (IntervalCellStack != null) {
+				IntervalCellStack.Dispose ();
+				IntervalCellStack = null;
+			}
+
+			if (IntervalCell != null) {
+				IntervalCell.Dispose ();
+				IntervalCell = null;
 			}
 		}
 	}
