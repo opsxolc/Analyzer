@@ -110,10 +110,11 @@ namespace Analyzer
             }
 
             // Setup view based on the column selected
-            textView.StringValue = "Время выполнения: " +
-                interval.Info.times.exec_time + "\n" +
-                "Коэффициент эффективности: " +
-                interval.Info.times.efficiency;
+            textView.StringValue = "type - " + interval.Info.id.t + "  expr - " + interval.Info.id.expr;
+                //"Время выполнения: " +
+                //interval.Info.times.exec_time + "\n" +
+                //"Коэффициент эффективности: " +
+                //interval.Info.times.efficiency;
             select.Activated += (object sender, EventArgs e) =>
                 Select_Activated(item);
             view.AddView(textView, NSStackViewGravity.Leading);

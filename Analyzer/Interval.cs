@@ -44,6 +44,26 @@ namespace Analyzer
             return null;
         }
 
+        public bool HasChildLoopInterval
+        {
+            get
+            {
+                foreach (var inter in Intervals)
+                {
+                    if (inter.Info.id.t != (int)InterTypes.USER)
+                        return true;
+                }
+                bool result = false;
+                int i = 0;
+                while (i < Intervals.Count && !result)
+                {
+                    result |= Intervals[i].HasChildLoopInterval;
+                    ++i;
+                }
+                return result;
+            }
+        }
+
         public Interval(List<IntervalJson> intervals, string dir, int row = 0)
         {
             Row = row;

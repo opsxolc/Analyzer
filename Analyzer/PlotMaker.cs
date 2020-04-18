@@ -11,6 +11,11 @@ using AppKit;
 namespace Analyzer
 {
 
+    public interface PlotPopoverInterface
+    {
+        CGSize Init(int statNum, int interNum);
+    }
+
     public class PlotMaker 
     {
         public static CGPoint clickPoint = new CGPoint(0,0);
@@ -167,25 +172,32 @@ namespace Analyzer
             var columns = sender as ColumnSeries;
             var model = columns.PlotModel;
             var nearest = columns.GetNearestPoint(e.Position, false);
-            var name = "";
+            string name;
 
-            if (columns.FillColor == OxyColors.GreenYellow)
+            if (columns.FillColor == OxyColors.GreenYellow) { 
                 name = "CommPopover";
-
-            if (name == "")
-                return;
+            }
+            else if (columns.FillColor == OxyColors.LightSkyBlue) { 
+                name = "IdlePopover";
+            }
+            else {
+                name = "InsufPopover";
+            }
 
             var windowController = ViewController.storyboard
-                .InstantiateControllerWithIdentifier("CommPopover") as NSWindowController;
-            var viewController = windowController.ContentViewController as CommPopoverController;
+                .InstantiateControllerWithIdentifier(name) as NSWindowController;
+            var viewController = windowController.ContentViewController as PlotPopoverInterface;
 
-            viewController.Init((int)nearest.DataPoint.X, interNum);
+            CGSize size = viewController.Init((int)nearest.DataPoint.X, interNum);
+
+            Console.WriteLine(name + " - " + windowController + " - " + viewController);
+
             var popover = new NSPopover
             {
-                ContentSize = new CGSize(220, 180),
+                ContentSize = size,
                 Behavior = NSPopoverBehavior.Transient,
                 Animates = true,
-                ContentViewController = viewController
+                ContentViewController = viewController as NSViewController
             };
             
             popover.Show(new CGRect(clickPoint, new CGSize(1, 1)),

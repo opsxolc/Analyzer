@@ -21,7 +21,6 @@ namespace Analyzer
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-            Console.WriteLine("Loaded");
             var gradientLayer = new CAGradientLayer();
             List<CGColor> colors = new List<CGColor>();
             colors.Add(OxyColors.GreenYellow.ToCGColor());
@@ -55,7 +54,7 @@ namespace Analyzer
             exprView.StringValue = "12";
             exprView.RotateByAngle(90);
 
-            exprView.SetFrameOrigin(new CGPoint(165, 86));
+            exprView.SetFrameOrigin(new CGPoint(167, 76));
             exprView.SetFrameSize(new CGSize(13, 28));
 
             var line = new NSBox
@@ -64,7 +63,7 @@ namespace Analyzer
             };
 
             line.SetFrameSize(new CGSize(2, 23));
-            line.SetFrameOrigin(new CGPoint(162, 89));
+            line.SetFrameOrigin(new CGPoint(163, 79));
 
             View.AddSubview(exprView);
             View.AddSubview(line);

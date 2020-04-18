@@ -4,34 +4,28 @@ using System;
 
 using Foundation;
 using AppKit;
+using CoreGraphics;
 
 namespace Analyzer
 {
-    public enum ColOps : int
-    {
-        IO, // Input/Output
-		RD, // Reduction
-		SH, // Shadow renew
-		RA // Remote Access
-	}
 
-	public partial class CommPopoverController : NSViewController
+	public partial class CommPopoverController : NSViewController, PlotPopoverInterface
 	{
 		public CommPopoverController (IntPtr handle) : base (handle)
 		{
 		}
 
-        public void Init(int statNum, int interNum)
+        public CGSize Init(int statNum, int interNum)
         {
-			Console.WriteLine("Going to Init CommPopover");
+			//Console.WriteLine("Going to Init CommPopover");
 			var stat = ViewController.CompareList.At(statNum);
 			var inter = stat.Info.inter[interNum];
 
 			CommLabel.StringValue = inter.times.comm.ToString("F2");
             CommLevel.DoubleValue = 100;
 
-			SynchLabel.StringValue = inter.times.synch.ToString("F2");
-			SynchLevel.DoubleValue = inter.times.synch / inter.times.comm * 100;
+			SynchLabel.StringValue = inter.times.real_comm.ToString("F2");
+			SynchLevel.DoubleValue = inter.times.real_comm / inter.times.comm * 100;
 
 			LoadImbLabel.StringValue = inter.times.load_imb.ToString("F2");
             LoadImbLevel.DoubleValue = inter.times.load_imb / inter.times.comm * 100;
@@ -43,7 +37,7 @@ namespace Analyzer
 			maxColOp = Math.Max(maxColOp, inter.col_op[(int)ColOps.SH].comm);
 			maxColOp = Math.Max(maxColOp, inter.col_op[(int)ColOps.RA].comm);
 
-			Console.WriteLine(maxColOp + " - " + ColOpLabel + " - " + ColOpLevel + " - " + ColOpNameLabel);
+			//Console.WriteLine(maxColOp + " - " + ColOpLabel + " - " + ColOpLevel + " - " + ColOpNameLabel);
 
 			if (inter.col_op[(int)ColOps.IO].comm == maxColOp) { 
 			    ColOpNameLabel.StringValue = "Ввод/вывод";
@@ -67,7 +61,8 @@ namespace Analyzer
 			}
 
 			//Console.WriteLine(""inter.col_op[2].comm;
-			Console.WriteLine("Init CommPopover OK");
+			//Console.WriteLine("Init CommPopover OK");
+			return new CGSize(220, 180);
 		}
 	}
 }

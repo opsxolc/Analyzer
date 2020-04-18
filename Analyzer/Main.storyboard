@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="15400" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15400"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -68,6 +67,206 @@
                 <customObject id="23R-cG-X9a" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1108.5" y="97.5"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="LsW-Jz-uXL">
+            <objects>
+                <windowController storyboardIdentifier="IdlePopover" id="OH2-ht-we3" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="De1-dg-M8X">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="311" y="199" width="271" height="203"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+                        <connections>
+                            <outlet property="delegate" destination="OH2-ht-we3" id="TVY-A6-Sef"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="7vb-rW-wXt" kind="relationship" relationship="window.shadowedContentViewController" id="mxr-1c-Mgy"/>
+                    </connections>
+                </windowController>
+                <customObject id="0y1-ye-WcQ" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1458.5" y="97.5"/>
+        </scene>
+        <!--Idle Popover Controller-->
+        <scene sceneID="pCm-H8-Fla">
+            <objects>
+                <viewController id="7vb-rW-wXt" customClass="IdlePopoverController" sceneMemberID="viewController">
+                    <view key="view" id="ZMb-Oh-hVf">
+                        <rect key="frame" x="0.0" y="0.0" width="211" height="172"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <box fixedFrame="YES" title="Дополнительные характеристики" translatesAutoresizingMaskIntoConstraints="NO" id="4wQ-se-Qbv">
+                                <rect key="frame" x="3" y="70" width="206" height="99"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <view key="contentView" id="jYm-xa-UaI">
+                                    <rect key="frame" x="3" y="3" width="200" height="84"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <levelIndicator verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="W6d-ed-vLA">
+                                            <rect key="frame" x="7" y="47" width="83" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <levelIndicatorCell key="cell" alignment="left" doubleValue="20" maxValue="100" warningValue="50" criticalValue="80" levelIndicatorStyle="continuousCapacity" id="Z23-ve-sEH"/>
+                                            <color key="fillColor" name="selectedControlColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="warningFillColor" name="systemTealColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="criticalFillColor" name="linkColor" catalog="System" colorSpace="catalog"/>
+                                        </levelIndicator>
+                                        <levelIndicator verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ebA-Kb-F6a">
+                                            <rect key="frame" x="107" y="47" width="83" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <levelIndicatorCell key="cell" alignment="left" doubleValue="54" maxValue="100" warningValue="40" criticalValue="80" levelIndicatorStyle="continuousCapacity" id="Cd6-e3-etw"/>
+                                            <color key="fillColor" name="selectedControlColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="warningFillColor" name="systemTealColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="criticalFillColor" name="linkColor" catalog="System" colorSpace="catalog"/>
+                                        </levelIndicator>
+                                        <levelIndicator verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="toS-FT-U5d">
+                                            <rect key="frame" x="59" y="11" width="83" height="18"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <levelIndicatorCell key="cell" alignment="left" doubleValue="85" maxValue="100" warningValue="50" criticalValue="80" levelIndicatorStyle="continuousCapacity" id="OP6-Cf-IYU"/>
+                                            <color key="fillColor" name="selectedControlColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="warningFillColor" name="systemTealColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="criticalFillColor" name="linkColor" catalog="System" colorSpace="catalog"/>
+                                        </levelIndicator>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sd9-wr-WCW">
+                                            <rect key="frame" x="9" y="47" width="79" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="center" title="8.12" id="tOe-6c-U0B">
+                                                <font key="font" metaFont="systemThin" size="10"/>
+                                                <color key="textColor" name="selectedMenuItemTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vjO-R7-P0u">
+                                            <rect key="frame" x="3" y="67" width="91" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Простои" id="3H0-BN-0Oc">
+                                                <font key="font" metaFont="systemThin" size="11"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZPc-zz-dzU">
+                                            <rect key="frame" x="111" y="47" width="75" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="center" title="8.12" id="ccv-c4-vgJ">
+                                                <font key="font" metaFont="systemThin" size="10"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XLj-ca-YIS">
+                                            <rect key="frame" x="99" y="67" width="99" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Разбалансировка" id="Kjn-VF-qbL">
+                                                <font key="font" metaFont="systemThin" size="11"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KD3-zZ-DqA">
+                                            <rect key="frame" x="65" y="11" width="71" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="truncatingTail" alignment="center" title="8.12" id="tQm-Uu-Ihw">
+                                                <font key="font" metaFont="systemThin" size="10"/>
+                                                <color key="textColor" name="selectedMenuItemTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ezx-00-TJC">
+                                            <rect key="frame" x="53" y="31" width="95" height="14"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" alignment="center" title="Разброс времен" id="ABm-K9-wc1">
+                                                <font key="font" metaFont="systemThin" size="11"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                    </subviews>
+                                </view>
+                                <font key="titleFont" size="9" name="HelveticaNeue"/>
+                            </box>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eTo-oh-kx1">
+                                <rect key="frame" x="2" y="17" width="207" height="53"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" selectable="YES" title="Здесь попробуем объяснить причину потерь на простоях." id="TbV-JW-W7I">
+                                    <font key="font" metaFont="label"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QQ9-SL-Vw2">
+                                <rect key="frame" x="67" y="2" width="78" height="16"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="bevel" title="Попроцессорно" bezelStyle="rounded" alignment="center" controlSize="mini" imageScaling="proportionallyDown" inset="2" id="3Hh-i1-Dny">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="label" size="9"/>
+                                </buttonCell>
+                            </button>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="IdleLabel" destination="Sd9-wr-WCW" id="nOi-dw-zNT"/>
+                        <outlet property="IdleLevel" destination="W6d-ed-vLA" id="Qvn-Ut-3Pi"/>
+                        <outlet property="LoadLabel" destination="ZPc-zz-dzU" id="Ivo-RS-WBn"/>
+                        <outlet property="LoadLevel" destination="ebA-Kb-F6a" id="vPT-Xf-LNi"/>
+                        <outlet property="ReasonLabel" destination="eTo-oh-kx1" id="flg-ks-g2T"/>
+                        <outlet property="VarLabel" destination="KD3-zZ-DqA" id="t29-dZ-K1d"/>
+                        <outlet property="VarLevel" destination="toS-FT-U5d" id="pwZ-rG-QTj"/>
+                    </connections>
+                </viewController>
+                <customObject id="lYF-hK-d99" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1453.5" y="454"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="wgX-A7-t60">
+            <objects>
+                <windowController storyboardIdentifier="InsufPopover" id="3I8-Wl-WrE" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="PeR-al-YC9">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="156" y="199" width="299" height="183"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+                        <connections>
+                            <outlet property="delegate" destination="3I8-Wl-WrE" id="eMz-P4-kLM"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="nrJ-NR-jkC" kind="relationship" relationship="window.shadowedContentViewController" id="qlx-4G-9X0"/>
+                    </connections>
+                </windowController>
+                <customObject id="wQ4-bw-lgP" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="752" y="724"/>
+        </scene>
+        <!--Insuf Popover Controller-->
+        <scene sceneID="qXd-05-Upw">
+            <objects>
+                <viewController id="nrJ-NR-jkC" customClass="InsufPopoverController" sceneMemberID="viewController">
+                    <view key="view" id="Te3-k8-WGn">
+                        <rect key="frame" x="0.0" y="0.0" width="293" height="71"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="USA-iY-wyB">
+                                <rect key="frame" x="6" y="7" width="280" height="58"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <textFieldCell key="cell" id="KV1-xX-bJG">
+                                    <font key="font" metaFont="message" size="11"/>
+                                    <string key="title">Подсказка по недостаточному параллелизму доступна только для автоматически размеченных интервалов при компиляции программы с флагами -e1, -e3 или -e4.</string>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                    <connections>
+                        <outlet property="Label" destination="USA-iY-wyB" id="EiL-9P-X2Z"/>
+                    </connections>
+                </viewController>
+                <customObject id="V8X-T7-cSy" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1144.5" y="667.5"/>
         </scene>
         <!--Comm Popover Controller-->
         <scene sceneID="AL2-nI-0Zj">
@@ -218,13 +417,13 @@
                                         </textField>
                                     </subviews>
                                 </view>
-                                <font key="titleFont" metaFont="system" size="9"/>
+                                <font key="titleFont" metaFont="label" size="9"/>
                             </box>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aF8-Bm-O5X">
                                 <rect key="frame" x="5" y="2" width="211" height="49"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <textFieldCell key="cell" selectable="YES" title="Здесь попробуем объяснить причину потерь на коммуникациях." id="ODh-Mi-Mvd">
-                                    <font key="font" metaFont="system" size="10"/>
+                                    <font key="font" metaFont="label"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -294,24 +493,6 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Oyr-On-oJ6">
-                                <rect key="frame" x="131" y="89" width="21" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" lineBreakMode="clipping" title="☞" id="OoE-DE-Myf">
-                                    <font key="font" metaFont="system" size="18"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dBG-hQ-HFz">
-                                <rect key="frame" x="9" y="93" width="119" height="14"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" lineBreakMode="clipping" title="значение выражения" id="Dzg-01-Y32">
-                                    <font key="font" metaFont="message" size="11"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="cl0-mQ-kxU">
                                 <rect key="frame" x="52" y="153" width="96" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
@@ -337,7 +518,7 @@
                                 </customSpacing>
                             </stackView>
                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FRV-TQ-MmN">
-                                <rect key="frame" x="7" y="8" width="186" height="73"/>
+                                <rect key="frame" x="7" y="8" width="186" height="56"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <textFieldCell key="cell" selectable="YES" title="Для просмотра дополнительной информации о составляющией потерянного времени нажмите на неё." id="tpK-AP-MBN">
                                     <font key="font" metaFont="message" size="11"/>
@@ -349,7 +530,25 @@
                                 <rect key="frame" x="44" y="160" width="112" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Ячейка интервала" id="tpl-gG-vzh">
-                                    <font key="font" metaFont="system" size="12"/>
+                                    <font key="font" metaFont="controlContent"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KI8-Ck-X1b">
+                                <rect key="frame" x="5" y="65" width="134" height="49"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <textFieldCell key="cell" selectable="YES" title="значение выражения для пользовательского интервала/тип цикла" id="ezu-6b-y9T">
+                                    <font key="font" metaFont="message" size="11"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Oyr-On-oJ6">
+                                <rect key="frame" x="141" y="80" width="21" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="☞" id="OoE-DE-Myf">
+                                    <font key="font" metaFont="system" size="18"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -422,7 +621,7 @@
                                                         <tableColumns>
                                                             <tableColumn width="441.5" minWidth="40" maxWidth="1000" id="C8Q-O3-KFs">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Статистика выполнения">
-                                                                    <font key="font" metaFont="menu" size="11"/>
+                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
@@ -435,7 +634,7 @@
                                                             </tableColumn>
                                                             <tableColumn width="294.5" minWidth="40" maxWidth="1000" id="Gby-5S-L7K">
                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Дата загрузки">
-                                                                    <font key="font" metaFont="menu" size="11"/>
+                                                                    <font key="font" metaFont="message" size="11"/>
                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                 </tableHeaderCell>
@@ -540,7 +739,7 @@
                                                                         <tableColumns>
                                                                             <tableColumn width="575" minWidth="40" maxWidth="1000" id="Bj4-OV-tBl">
                                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Дерево интервалов">
-                                                                                    <font key="font" metaFont="menu" size="11"/>
+                                                                                    <font key="font" metaFont="message" size="11"/>
                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                                     <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                                 </tableHeaderCell>
@@ -675,7 +874,7 @@
                                                                 <tableColumns>
                                                                     <tableColumn width="40" minWidth="40" maxWidth="1000" id="gvz-9o-4eT">
                                                                         <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Дерево интервалов">
-                                                                            <font key="font" metaFont="menu" size="11"/>
+                                                                            <font key="font" metaFont="message" size="11"/>
                                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                                         </tableHeaderCell>

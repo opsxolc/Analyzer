@@ -134,6 +134,14 @@
     <Compile Include="CommPopoverController.designer.cs">
       <DependentUpon>CommPopoverController.cs</DependentUpon>
     </Compile>
+    <Compile Include="InsufPopoverController.cs" />
+    <Compile Include="InsufPopoverController.designer.cs">
+      <DependentUpon>InsufPopoverController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IdlePopoverController.cs" />
+    <Compile Include="IdlePopoverController.designer.cs">
+      <DependentUpon>IdlePopoverController.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Main.storyboard" />

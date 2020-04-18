@@ -122,7 +122,19 @@ namespace Analyzer
             }
 
             //---  Устанавливаем значение Expr  ---//
-            exprView.StringValue = interval.Info.id.expr.ToString();
+            switch (interval.Info.id.t) {
+                case (int)InterTypes.USER:
+                    exprView.StringValue = interval.Info.id.expr.ToString();
+                    break;
+                case (int)InterTypes.SEQ:
+                    exprView.StringValue = "Посл";
+                    exprView.Font = NSFont.FromFontName("Helvetica Neue", 10);
+                    break;
+                case (int)InterTypes.PAR:
+                    exprView.StringValue = "Пар";
+                    exprView.Font = NSFont.FromFontName("Helvetica Neue", 10);
+                    break;
+            }
 
             return view;
         }

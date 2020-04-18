@@ -3,6 +3,21 @@ using System.IO;
 
 namespace Analyzer
 {
+    enum ColOps
+    {
+        IO, // Input/Output
+        RD, // Reduction
+        SH, // Shadow renew
+        RA // Remote Access
+    }
+
+    enum InterTypes
+    {
+        SEQ = 21,
+        PAR,
+        USER
+    }
+
     public class Stat
     {
         
