@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using AppKit;
+using CoreAnimation;
 using CoreGraphics;
 using Foundation;
 using Newtonsoft.Json;
@@ -20,9 +21,11 @@ namespace Analyzer
         public static NSStoryboard storyboard = NSStoryboard.FromName("Main", null);
         private NSWindowController popoverWindowController;
         private PopoverController popoverViewController;
-        private double plotMaxTime;
+        private double plotCompareMaxTime;
+        private double plotStatMaxTime;
         private bool firstTime;
         private NSPopover helpPopover;
+        public static Stat LoadedStat;
 
         public override void MouseDown(NSEvent theEvent)
         {
@@ -32,6 +35,16 @@ namespace Analyzer
 
         public ViewController(IntPtr handle) : base(handle)
         {
+        }
+
+        private void InitInterTree()
+        {
+            plotStatMaxTime = -1;
+            InterTreeSplitView.SetPositionOfDivider(310, 0);
+            InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
+            InterTreeSegmentController.SetSelected(false, 1);
+            InterTreeSegmentController.SetSelected(true, 0);
+            InterTreePlotTypeController.SelectItem(0);
         }
 
         // Добавить статистику в StatTableView
@@ -62,17 +75,15 @@ namespace Analyzer
             StatTableView.Delegate = new StatTableDelegate();
         }
 
-        public void Selected(string text)
-        {
-            InterText.Value = text;
-        }
-
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
             // Do any additional setup after loading the view.
             LoadStatList();
             InitDataInterView();
+            InitInterTree();
+            InterTreeSplitView.SetPositionOfDivider(0, 0);
+            InterTreeSegmentController.SetSelected(false, 0);
             firstTime = true;
 
             //---  Init alerts  ---//
@@ -152,7 +163,7 @@ namespace Analyzer
         {
             if (IntervalCompareButton.State == NSCellStateValue.On)
                 CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width - 200, 0);
-            else { 
+            else {
                 CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width, 0);
                 CompareIntervalTree.SelectRow(0, false);
             }
@@ -175,22 +186,27 @@ namespace Analyzer
         {
             var DataSource = new IntervalOutlineDataSource();
             InterView.DataSource = DataSource;
-            InterView.Delegate = new IntervalOutlineDelegate(DataSource, this, InterView);
+            InterView.Delegate = new IntervalOutlineDelegate(DataSource, this);
+        }
+
+        public void InterView_SelectionDidChange(object sender, EventArgs e)
+        {
+            var item = InterView.ItemAtRow(InterView.SelectedRow) as Interval;
+            InterText.Value = item.Text;
+            InterTreePlotView.Model = PlotMaker.LostTimePlot(LoadedStat, item.Row, plotStatMaxTime);
         }
 
         private void SetDataToInterView(Stat stat)
         {
+            InitInterTree();
             InterText.Value = "";
             var intervals = ((IntervalOutlineDataSource)InterView.DataSource).Intervals;
             intervals.Clear();
             intervals.Add(stat.Interval);
             InterView.ReloadData();
             InterView.ExpandItem(InterView.ItemAtRow(0), true);
-        }
-
-        private void InterView_DoubleClick(object sender, EventArgs e)
-        {
-            Console.WriteLine("Hello");
+            InterView.SelectRow(0, false);
+            plotStatMaxTime = InterTreePlotView.Model.GetAxis("Time").ActualMaximum;
         }
 
         partial void CloseButton(Foundation.NSObject sender)
@@ -229,7 +245,7 @@ namespace Analyzer
             AddStatToList(stat, creationTime);
 
             //---  Set data to InterView  ---//
-            SetDataToInterView(stat);
+            //SetDataToInterView(stat);
         }
 
         partial void LoadStat(NSObject sender)
@@ -244,7 +260,9 @@ namespace Analyzer
 
             StatDir statDir = ((StatTableDataSource)StatTableView.DataSource)
                 .StatDirs[(int)StatTableView.SelectedRow];
-            SetDataToInterView(new Stat(statDir.path));
+            LoadedStat = new Stat(statDir.path);
+            SetDataToInterView(LoadedStat);
+            firstTime = false;
 
             //---  Switch active view   ---//
             TabView.SelectAt(1);
@@ -297,8 +315,8 @@ namespace Analyzer
             CompareSort.Enabled = true;
             IntervalCompareButton.Enabled = true;
             plotView.Model = PlotMaker.LostTimeComparePlot();
-            plotMaxTime = plotView.Model.GetAxis("Time").ActualMaximum;
-            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(plotMaxTime);
+            plotCompareMaxTime = plotView.Model.GetAxis("Time").ActualMaximum;
+            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(plotCompareMaxTime);
 
             //---  Set CompareIntervalTree  ---//
             ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals.Clear();
@@ -310,7 +328,8 @@ namespace Analyzer
 
             //--- Switch tab  ---//
             TabView.SelectAt(2);
-            if (firstTime) { 
+            if (firstTime)
+            {
                 CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width - 200, 0);
                 firstTime = false;
             }
@@ -340,6 +359,32 @@ namespace Analyzer
             popover.ContentViewController = popoverViewController;
 
             popover.Show(new CGRect(new CGPoint(0, 0), new CGSize(100, 100)), View, NSRectEdge.MaxXEdge);
+        }
+
+        partial void InterTreeSegment(NSObject sender)
+        {
+            var s = sender as NSSegmentedControl;
+
+            if (s.IsSelectedForSegment(0) && InterTreePlotView.Frame.Width <= 20)
+                InterTreeSplitView.SetPositionOfDivider(310, 0);
+            else if (!s.IsSelectedForSegment(0))
+                InterTreeSplitView.SetPositionOfDivider(0, 0);
+            
+            if (s.IsSelectedForSegment(1) && InterText.Frame.Width <= 20)
+            {
+                NSAnimationContext.RunAnimation((NSAnimationContext a) => {
+                    a.AllowsImplicitAnimation = true;
+                    a.Duration = 0.5;
+                    InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width - 300, 1);
+                });
+            }
+            else if (!s.IsSelectedForSegment(1))
+                NSAnimationContext.RunAnimation((NSAnimationContext a) => {
+                    a.AllowsImplicitAnimation = true;
+                    a.Duration = 0.5;
+                    InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
+                });
+
         }
 
     }

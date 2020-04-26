@@ -28,6 +28,18 @@ namespace Analyzer
 		AppKit.NSTextView InterText { get; set; }
 
 		[Outlet]
+		AppKit.NSPopUpButton InterTreePlotTypeController { get; set; }
+
+		[Outlet]
+		OxyPlot.Xamarin.Mac.PlotView InterTreePlotView { get; set; }
+
+		[Outlet]
+		AppKit.NSSegmentedControl InterTreeSegmentController { get; set; }
+
+		[Outlet]
+		AppKit.NSSplitView InterTreeSplitView { get; set; }
+
+		[Outlet]
 		AppKit.NSButton IntervalCompareButton { get; set; }
 
 		[Outlet]
@@ -63,6 +75,12 @@ namespace Analyzer
 		[Action ("DeleteStat:")]
 		partial void DeleteStat (Foundation.NSObject sender);
 
+		[Action ("InterTreePlotType:")]
+		partial void InterTreePlotType (Foundation.NSObject sender);
+
+		[Action ("InterTreeSegment:")]
+		partial void InterTreeSegment (Foundation.NSObject sender);
+
 		[Action ("IntervalCompare:")]
 		partial void IntervalCompare (Foundation.NSObject sender);
 
@@ -80,11 +98,6 @@ namespace Analyzer
 			if (ChooseLabel != null) {
 				ChooseLabel.Dispose ();
 				ChooseLabel = null;
-			}
-
-			if (TableHeader != null) {
-				TableHeader.Dispose ();
-				TableHeader = null;
 			}
 
 			if (CompareIntervalTree != null) {
@@ -127,9 +140,34 @@ namespace Analyzer
 				StatPath = null;
 			}
 
+			if (InterTreeSegmentController != null) {
+				InterTreeSegmentController.Dispose ();
+				InterTreeSegmentController = null;
+			}
+
+			if (InterTreePlotTypeController != null) {
+				InterTreePlotTypeController.Dispose ();
+				InterTreePlotTypeController = null;
+			}
+
 			if (StatTableView != null) {
 				StatTableView.Dispose ();
 				StatTableView = null;
+			}
+
+			if (InterTreeSplitView != null) {
+				InterTreeSplitView.Dispose ();
+				InterTreeSplitView = null;
+			}
+
+			if (InterTreePlotView != null) {
+				InterTreePlotView.Dispose ();
+				InterTreePlotView = null;
+			}
+
+			if (TableHeader != null) {
+				TableHeader.Dispose ();
+				TableHeader = null;
 			}
 
 			if (TabView != null) {

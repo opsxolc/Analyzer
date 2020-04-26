@@ -24,11 +24,6 @@ namespace Analyzer
             //controller.Window.Title = "Some title " + item.Info.times.exec_time;
         }
 
-        public override bool AcceptsFirstResponder()
-        {
-            return true;
-        }
-
         public override void MouseDown(NSEvent theEvent)
         {
             DateTime now = DateTime.Now;
@@ -38,6 +33,7 @@ namespace Analyzer
                 //controller.ShowWindow(this);
             }
             lastClick = now;
+            base.MouseDown(theEvent);
             return;
         }
     }
@@ -50,7 +46,7 @@ namespace Analyzer
         private IntervalOutlineDataSource DataSource;
 
         public IntervalOutlineDelegate(IntervalOutlineDataSource datasource,
-            ViewController viewController, NSOutlineView outlineView)
+            ViewController viewController)
         {
             this.viewController = viewController;
             DataSource = datasource;
@@ -64,7 +60,6 @@ namespace Analyzer
 
             IntervalStackView view = (IntervalStackView)outlineView.MakeView(CellIdentifier, this);
             NSTextField textView = (NSTextField)(view == null ? null : view.Subviews[0]);
-            NSButton select = (NSButton)(view == null ? null : view.Subviews[1]);
 
             // Cast item
             var interval = item as Interval;
@@ -80,8 +75,8 @@ namespace Analyzer
 
                 view = new IntervalStackView(interval)
                 {
-                    Layer = gradientLayer,
-                    WantsLayer = true,
+                    //Layer = gradientLayer,
+                    //WantsLayer = true,
                     AutoresizesSubviews = false
                 };
 
@@ -97,37 +92,19 @@ namespace Analyzer
                 };
 
                 textView.SetFrameSize(new CGSize(tableColumn.Width - 130, 50));
-
-                select = new NSButton
-                {
-                    BezelStyle = NSBezelStyle.Rounded,
-                    Title = "Текст"
-                };
-                select.SetButtonType(NSButtonType.MomentaryPushIn);
-                select.SetFrameSize(new CGSize(70, 20));
-
-                select.BecomeFirstResponder();
             }
 
             // Setup view based on the column selected
-            textView.StringValue = "type - " + interval.Info.id.t + "  expr - " + interval.Info.id.expr;
-                //"Время выполнения: " +
-                //interval.Info.times.exec_time + "\n" +
-                //"Коэффициент эффективности: " +
-                //interval.Info.times.efficiency;
-            select.Activated += (object sender, EventArgs e) =>
-                Select_Activated(item);
+            textView.StringValue = "type - " + (InterTypes) interval.Info.id.t + "  expr - " + interval.Info.id.expr;
             view.AddView(textView, NSStackViewGravity.Leading);
-            view.AddView(select, NSStackViewGravity.Trailing);
 
             return view;
         }
 
-        private void Select_Activated(object item)
+        public override void SelectionDidChange(NSNotification notification)
         {
-            //Console.Write("Button clicked");
-            Interval inter = (Interval)item;
-            viewController.Selected(inter.Text);
+            viewController.InterView_SelectionDidChange(this, new EventArgs());
         }
+
     }
 }

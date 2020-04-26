@@ -20,7 +20,7 @@ namespace Analyzer
     {
         public static CGPoint clickPoint = new CGPoint(0,0);
 
-        private static (List<ColumnSeries> data, List<CategoryAxis> xaxis) InitDataAndXaxis(int interNum)
+        private static (List<ColumnSeries> data, List<CategoryAxis> xaxis) InitDataAndXaxis(int interNum, bool popover = true)
         {
             List<CategoryAxis> xaxis = new List<CategoryAxis>();
             List<ColumnSeries> data = new List<ColumnSeries>();
@@ -46,8 +46,9 @@ namespace Analyzer
                     IsStacked = true
                 });
 
-                data[i].MouseDown += (object sender, OxyMouseDownEventArgs e)
-                    => Model_MouseDown(sender, e, interNum);
+                if (popover)
+                    data[i].MouseDown += (object sender, OxyMouseDownEventArgs e)
+                        => Model_MouseDown(sender, e, interNum);
             }
 
             xaxis[0].MajorGridlineStyle = LineStyle.Solid;
@@ -124,7 +125,6 @@ namespace Analyzer
                 Title = "Потерянное время"
             };
 
-
             //---  Init axis  ---//
             (var data, var xaxis) = InitDataAndXaxis(intervalNum);
 
@@ -156,6 +156,50 @@ namespace Analyzer
                 data[2].Items.Add(new ColumnItem(intervals[i].times.idle));
                 data[3].Items.Add(new ColumnItem(intervals[i].times.comm));
             }
+
+            for (int i = 0; i < 4; ++i)
+            {
+                model.Axes.Add(xaxis[i]);
+                model.Series.Add(data[i]);
+            }
+            model.Axes.Add(yaxis);
+
+            return model;
+        }
+
+        public static PlotModel LostTimePlot(Stat stat, int intervalNum = 0, double maxTime = -1)
+        {
+            var model = new PlotModel
+            {
+                Title = "Потерянное время"
+            };
+
+            //---  Init axis  ---//
+            (var data, var xaxis) = InitDataAndXaxis(intervalNum, false);
+
+            var yaxis = new LinearAxis();
+            yaxis.Position = AxisPosition.Left;
+            yaxis.MajorGridlineStyle = LineStyle.Dot;
+            yaxis.MinorGridlineStyle = LineStyle.Dot;
+            yaxis.Title = "Время, с";
+            yaxis.AxisTitleDistance = 7;
+            yaxis.AbsoluteMinimum = 0;
+            if (maxTime > 0)
+                yaxis.Maximum = maxTime;
+            yaxis.Key = "Time";
+
+            xaxis[0].Labels.Add("Кол-во процессоров: "
+                + stat.Info.nproc);
+            xaxis[1].Labels.Add("Время выполнения: "
+                + stat.Info.inter[0].times.exec_time.ToString("F3"));
+            xaxis[2].Labels.Add("Коэфф. эффективности: "
+                + stat.Info.inter[0].times.efficiency.ToString("F3"));
+            xaxis[3].Labels.Add("Файл: "
+                + stat.Info.inter[0].id.pname);
+            data[0].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].times.insuf_sys));
+            data[1].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].times.insuf_user));
+            data[2].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].times.idle));
+            data[3].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].times.comm));
 
             for (int i = 0; i < 4; ++i)
             {
