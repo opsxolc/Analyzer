@@ -234,8 +234,6 @@ namespace Analyzer
 
             CGSize size = viewController.Init((int)nearest.DataPoint.X, interNum);
 
-            Console.WriteLine(name + " - " + windowController + " - " + viewController);
-
             var popover = new NSPopover
             {
                 ContentSize = size,

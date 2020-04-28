@@ -8,7 +8,6 @@ namespace Analyzer
     {
         public readonly List<Stat> List;  // список сравнения
         public readonly List<List<IntervalJson>> IntervalsList;
-        public readonly char c = '1';
 
         public StatCompareList()
         {
@@ -30,14 +29,7 @@ namespace Analyzer
             string json = stat.ToJson();
             for (int i = 0; i < List.Count; ++i)
             {
-                // TODO: Починить тупую ошибку с test_time
-                //Console.WriteLine("Going to LibraryImport");
-                //Console.WriteLine("STAT1: \n" + List[i].Interval + "\n");
-                //Console.WriteLine("STAT2: \n" + new Stat(json, "").Interval + "\n");
                 LibraryImport.stat_intersect_(List[i].ToJson(), json, out res1, out res2);
-                //Console.WriteLine("LibraryImport OK");
-                //Console.WriteLine("RES1: \n" + new Stat(res1, "").Interval + "\n");
-                //Console.WriteLine("RES2: \n" + new Stat(res2, "").Interval + "\n");
                 List[i].ChangeJson(res1);
                 json = res2;
             }
