@@ -522,7 +522,7 @@
                                 <rect key="frame" x="44" y="160" width="112" height="15"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Ячейка интервала" id="tpl-gG-vzh">
-                                    <font key="font" metaFont="controlContent"/>
+                                    <font key="font" metaFont="label" size="12"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -719,30 +719,74 @@
                                             <rect key="frame" x="0.0" y="-3" width="877" height="582"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <customView fixedFrame="YES" id="97D-co-NAp" customClass="PlotView">
-                                                    <rect key="frame" x="0.0" y="0.0" width="393" height="582"/>
+                                                <customView fixedFrame="YES" id="97D-co-NAp">
+                                                    <rect key="frame" x="0.0" y="0.0" width="293" height="582"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                                    <subviews>
+                                                        <splitView fixedFrame="YES" arrangesAllSubviews="NO" dividerStyle="paneSplitter" translatesAutoresizingMaskIntoConstraints="NO" id="J7I-vh-dqL">
+                                                            <rect key="frame" x="0.0" y="0.0" width="293" height="582"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <subviews>
+                                                                <customView fixedFrame="YES" id="7Kx-7D-z5F" customClass="PlotView">
+                                                                    <rect key="frame" x="0.0" y="0.0" width="293" height="458"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                </customView>
+                                                                <scrollView fixedFrame="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="5Qs-8i-c9y">
+                                                                    <rect key="frame" x="0.0" y="468" width="293" height="114"/>
+                                                                    <autoresizingMask key="autoresizingMask"/>
+                                                                    <clipView key="contentView" id="NSZ-B9-chH">
+                                                                        <rect key="frame" x="1" y="1" width="291" height="112"/>
+                                                                        <autoresizingMask key="autoresizingMask"/>
+                                                                        <subviews>
+                                                                            <view id="4J4-rT-Oes">
+                                                                                <rect key="frame" x="0.0" y="0.0" width="276" height="97"/>
+                                                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                <subviews>
+                                                                                    <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="250" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" id="TEN-eO-cav">
+                                                                                        <rect key="frame" x="0.0" y="0.0" width="276" height="97"/>
+                                                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                                    </stackView>
+                                                                                </subviews>
+                                                                            </view>
+                                                                        </subviews>
+                                                                    </clipView>
+                                                                    <scroller key="horizontalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="mKH-zy-Dcn">
+                                                                        <rect key="frame" x="1" y="97" width="291" height="16"/>
+                                                                        <autoresizingMask key="autoresizingMask"/>
+                                                                    </scroller>
+                                                                    <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="TPR-oE-7Wq">
+                                                                        <rect key="frame" x="276" y="1" width="16" height="112"/>
+                                                                        <autoresizingMask key="autoresizingMask"/>
+                                                                    </scroller>
+                                                                </scrollView>
+                                                            </subviews>
+                                                            <holdingPriorities>
+                                                                <real value="250"/>
+                                                                <real value="250"/>
+                                                            </holdingPriorities>
+                                                        </splitView>
+                                                    </subviews>
                                                 </customView>
                                                 <customView fixedFrame="YES" id="aX8-SA-BW6">
-                                                    <rect key="frame" x="394" y="0.0" width="310" height="582"/>
+                                                    <rect key="frame" x="294" y="0.0" width="410" height="582"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <subviews>
                                                         <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="34" horizontalPageScroll="10" verticalLineScroll="34" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8CI-6e-qpn">
-                                                            <rect key="frame" x="0.0" y="0.0" width="310" height="582"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="410" height="582"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <clipView key="contentView" ambiguous="YES" copiesOnScroll="NO" id="DEE-Jx-VsA">
-                                                                <rect key="frame" x="1" y="1" width="308" height="580"/>
+                                                                <rect key="frame" x="1" y="1" width="408" height="580"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <outlineView verticalHuggingPriority="750" ambiguous="YES" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnResizing="NO" multipleSelection="NO" emptySelection="NO" rowHeight="32" rowSizeStyle="large" viewBased="YES" floatsGroupRows="NO" indentationPerLevel="30" outlineTableColumn="Bj4-OV-tBl" id="R6i-uo-Jrc">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="308" height="580"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="408" height="580"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                         <tableViewGridLines key="gridStyleMask" dashed="YES"/>
                                                                         <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                         <tableColumns>
-                                                                            <tableColumn width="305" minWidth="40" maxWidth="1000" id="Bj4-OV-tBl">
+                                                                            <tableColumn width="405" minWidth="40" maxWidth="1000" id="Bj4-OV-tBl">
                                                                                 <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Дерево интервалов">
                                                                                     <font key="font" metaFont="message" size="11"/>
                                                                                     <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -756,11 +800,11 @@
                                                                                 <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                                                 <prototypeCellViews>
                                                                                     <tableCellView id="CIS-ID-hdK">
-                                                                                        <rect key="frame" x="1" y="1" width="305" height="17"/>
+                                                                                        <rect key="frame" x="1" y="1" width="405" height="17"/>
                                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                                         <subviews>
                                                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fvY-7K-4Gv">
-                                                                                                <rect key="frame" x="0.0" y="0.0" width="305" height="17"/>
+                                                                                                <rect key="frame" x="0.0" y="0.0" width="405" height="17"/>
                                                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                                                 <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="ZTZ-Ui-5BJ">
                                                                                                     <font key="font" metaFont="system"/>
@@ -780,7 +824,7 @@
                                                                 </subviews>
                                                             </clipView>
                                                             <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="sIz-ee-2uO">
-                                                                <rect key="frame" x="1" y="545" width="294" height="16"/>
+                                                                <rect key="frame" x="1" y="565" width="408" height="16"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </scroller>
                                                             <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="ruy-wI-PNj">
@@ -830,25 +874,8 @@
                                                 <real value="250"/>
                                             </holdingPriorities>
                                         </splitView>
-                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="gVQ-Ic-shS">
-                                            <rect key="frame" x="15" y="579" width="157" height="25"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <popUpButtonCell key="cell" type="push" title="Потерянное время" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Rf8-Gi-pRY" id="KQJ-Cn-81U">
-                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
-                                                <font key="font" metaFont="system"/>
-                                                <menu key="menu" id="S4R-5d-wEA">
-                                                    <items>
-                                                        <menuItem title="Потерянное время" state="on" id="Rf8-Gi-pRY"/>
-                                                        <menuItem title="Попроцессорно" id="j3a-6b-t4u"/>
-                                                    </items>
-                                                </menu>
-                                            </popUpButtonCell>
-                                            <connections>
-                                                <action selector="InterTreePlotType:" target="XfG-lQ-9wD" id="U8M-2m-3Tr"/>
-                                            </connections>
-                                        </popUpButton>
                                         <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kpo-pm-ibi">
-                                            <rect key="frame" x="721" y="580" width="141" height="24"/>
+                                            <rect key="frame" x="721" y="583" width="141" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <segmentedCell key="cell" borderStyle="border" alignment="left" segmentDistribution="fillProportionally" style="rounded" trackingMode="selectAny" id="nuj-id-8c1">
                                                 <font key="font" metaFont="message" size="11"/>
@@ -861,6 +888,41 @@
                                                 <action selector="InterTreeSegment:" target="XfG-lQ-9wD" id="RQF-Bv-1xj"/>
                                             </connections>
                                         </segmentedControl>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7vN-y9-mTP">
+                                            <rect key="frame" x="99" y="582" width="109" height="25"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Item 1" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="dMf-r5-lqz" id="OY0-wG-Skg">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                                <menu key="menu" id="kk4-dv-7uO">
+                                                    <items>
+                                                        <menuItem title="Item 1" state="on" id="dMf-r5-lqz"/>
+                                                        <menuItem title="Item 2" id="S8j-Xy-ZKg"/>
+                                                        <menuItem title="Item 3" id="mQe-XF-Fh2"/>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                        </popUpButton>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Whh-eh-pnq">
+                                            <rect key="frame" x="15" y="588" width="80" height="16"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Сортировка" id="Gdv-J0-YOK">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SbE-r8-tnf">
+                                            <rect key="frame" x="207" y="578" width="191" height="32"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <buttonCell key="cell" type="push" title="Характеристики на ГПУ" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="sI5-N7-ARi">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="StatGPUButton_Activated:" target="XfG-lQ-9wD" id="XO4-dU-o6D"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -952,17 +1014,17 @@
                                                 <real value="250"/>
                                             </holdingPriorities>
                                         </splitView>
-                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Caf-zu-5vN">
-                                            <rect key="frame" x="770" y="580" width="80" height="16"/>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UxF-aM-1xt">
+                                            <rect key="frame" x="749" y="583" width="122" height="16"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Сортировка" id="n9R-eZ-UbF">
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Выбор диаграммы" id="XDg-Nd-T7F">
                                                 <font key="font" metaFont="system"/>
                                                 <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
                                         </textField>
                                         <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dwC-aV-DTo">
-                                            <rect key="frame" x="749" y="548" width="123" height="25"/>
+                                            <rect key="frame" x="749" y="489" width="123" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <popUpButtonCell key="cell" type="push" title="123" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" inset="2" selectedItem="MzR-DM-RDx" id="YNa-EE-jfa">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -976,8 +1038,25 @@
                                                 </menu>
                                             </popUpButtonCell>
                                         </popUpButton>
+                                        <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Fdb-ah-N5u">
+                                            <rect key="frame" x="749" y="555" width="123" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                            <popUpButtonCell key="cell" type="push" title="Потерянное время ЦПУ" bezelStyle="rounded" alignment="center" lineBreakMode="truncatingTail" state="on" borderStyle="border" inset="2" selectedItem="xYf-xc-3cd" id="z7M-ut-C8I">
+                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                                <menu key="menu" id="I3h-BH-NUL">
+                                                    <items>
+                                                        <menuItem title="Потерянное время ЦПУ" state="on" id="xYf-xc-3cd"/>
+                                                        <menuItem title="Сравнение ГПУ" id="iuq-B8-mdf"/>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                            <connections>
+                                                <action selector="CompareDiagramSelect_Activated:" target="XfG-lQ-9wD" id="TeF-Z6-GWA"/>
+                                            </connections>
+                                        </popUpButton>
                                         <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RsU-SU-Jja">
-                                            <rect key="frame" x="745" y="513" width="130" height="39"/>
+                                            <rect key="frame" x="745" y="452" width="130" height="39"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                             <buttonCell key="cell" type="push" title="Поинтервально" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="7lZ-tO-HBH">
                                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
@@ -1009,6 +1088,19 @@
                                                 <action selector="CompareBack:" target="XfG-lQ-9wD" id="zzM-ya-EAv"/>
                                             </connections>
                                         </button>
+                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="SKJ-hP-AQZ">
+                                            <rect key="frame" x="751" y="543" width="118" height="5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                        </box>
+                                        <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Caf-zu-5vN">
+                                            <rect key="frame" x="770" y="521" width="80" height="16"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" lineBreakMode="clipping" title="Сортировка" id="n9R-eZ-UbF">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
                                     </subviews>
                                 </view>
                             </tabViewItem>
@@ -1016,18 +1108,20 @@
                     </tabView>
                     <connections>
                         <outlet property="ChooseLabel" destination="iou-tF-u5C" id="L1m-Ja-2B1"/>
+                        <outlet property="CompareDiagramSelect" destination="Fdb-ah-N5u" id="Wce-O2-9H6"/>
                         <outlet property="CompareIntervalTree" destination="0gF-Co-Bsl" id="1cU-rK-2qm"/>
                         <outlet property="CompareReset" destination="Mvn-T4-tYY" id="a9V-WO-kNF"/>
                         <outlet property="CompareSort" destination="dwC-aV-DTo" id="NdG-M0-L7c"/>
                         <outlet property="CompareSplitView" destination="sL2-5T-q1r" id="Ivw-Od-OA9"/>
                         <outlet property="CompareStat" destination="rKM-Zc-tv0" id="z9D-GW-uKm"/>
+                        <outlet property="GPUStackView" destination="TEN-eO-cav" id="ZXa-f2-hkv"/>
                         <outlet property="InterText" destination="Urn-Ga-3So" id="1RZ-UF-Wpn"/>
-                        <outlet property="InterTreePlotTypeController" destination="gVQ-Ic-shS" id="h2y-F9-p1y"/>
-                        <outlet property="InterTreePlotView" destination="97D-co-NAp" id="Ueb-AB-Zg9"/>
+                        <outlet property="InterTreePlotView" destination="7Kx-7D-z5F" id="fRU-pb-KJJ"/>
                         <outlet property="InterTreeSegmentController" destination="Kpo-pm-ibi" id="P75-uQ-vHO"/>
                         <outlet property="InterTreeSplitView" destination="TEE-rM-hNp" id="Ren-Ls-7Tl"/>
                         <outlet property="InterView" destination="R6i-uo-Jrc" id="8Vo-aO-Cpn"/>
                         <outlet property="IntervalCompareButton" destination="RsU-SU-Jja" id="gm9-QE-yg8"/>
+                        <outlet property="PlotSplitView" destination="J7I-vh-dqL" id="J0F-By-Wgz"/>
                         <outlet property="StatListView" destination="TXE-bo-IKf" id="vkG-fY-qpZ"/>
                         <outlet property="StatPath" destination="fFH-l4-xzF" id="ipu-e8-bDA"/>
                         <outlet property="StatTableView" destination="MJu-KT-gTE" id="E5J-2C-7WL"/>

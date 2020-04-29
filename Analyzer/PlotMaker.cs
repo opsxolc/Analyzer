@@ -69,50 +69,6 @@ namespace Analyzer
             return (data, xaxis);
         }
 
-        public static void SortPlot(PlotView view, string par, int intervalNum = 0)
-        {
-            view.Model.InvalidatePlot(true);
-            view.Model.Series.Clear();
-            view.Model.InvalidatePlot(true);
-            var yaxis = view.Model.GetAxis("Time");
-            view.Model.Axes.Clear();
-
-            (var data, var xaxis) = InitDataAndXaxis(intervalNum);
-
-            ViewController.CompareList.Sort(par, intervalNum);
-            var compareList = ViewController.CompareList.List;
-
-            List<IntervalJson> intervals = ViewController.CompareList.IntervalsList[intervalNum];
-
-            for (int i = 0; i < compareList.Count; ++i)
-            {
-                xaxis[0].Labels.Add("Кол-во процессоров: "
-                    + compareList[i].Info.nproc);
-                xaxis[1].Labels.Add("Время выполнения: "
-                    + compareList[i].Info.inter[0].times.exec_time.ToString("F3"));
-                xaxis[2].Labels.Add("Коэфф. эффективности: "
-                    + compareList[i].Info.inter[0].times.efficiency.ToString("F3"));
-                xaxis[3].Labels.Add("Файл: "
-                    + compareList[i].Info.inter[0].id.pname);
-                data[0].Items.Add(new ColumnItem(intervals[i].times.insuf_sys));
-                data[1].Items.Add(new ColumnItem(intervals[i].times.insuf_user));
-                data[2].Items.Add(new ColumnItem(intervals[i].times.idle));
-                data[3].Items.Add(new ColumnItem(intervals[i].times.comm));
-            }
-
-            view.Model.Axes.Add(yaxis);
-            view.Model.InvalidatePlot(true);
-
-            for (int i = 0; i < 4; ++i) {
-                view.Model.Axes.Add(xaxis[i]);
-                view.Model.InvalidatePlot(true);
-                view.Model.Series.Add(data[i]);
-                view.Model.InvalidatePlot(true);
-            }
-            view.Model.InvalidatePlot(true);
-
-        }
-
         public void DetailPlot(StatCompareList compareList)
         {
             // TODO: Сделать что-то ?
@@ -167,7 +123,7 @@ namespace Analyzer
             return model;
         }
 
-        public static PlotModel LostTimePlot(Stat stat, int intervalNum = 0, double maxTime = -1)
+        public static PlotModel ProcLostTimePlot(Stat stat, int intervalNum = 0, double maxTime = -1)
         {
             var model = new PlotModel
             {
@@ -175,7 +131,7 @@ namespace Analyzer
             };
 
             //---  Init axis  ---//
-            (var data, var xaxis) = InitDataAndXaxis(intervalNum, false);
+            (var data, var _) = InitDataAndXaxis(intervalNum, false);
 
             var yaxis = new LinearAxis();
             yaxis.Position = AxisPosition.Left;
@@ -188,24 +144,22 @@ namespace Analyzer
                 yaxis.Maximum = maxTime;
             yaxis.Key = "Time";
 
-            xaxis[0].Labels.Add("Кол-во процессоров: "
-                + stat.Info.nproc);
-            xaxis[1].Labels.Add("Время выполнения: "
-                + stat.Info.inter[0].times.exec_time.ToString("F3"));
-            xaxis[2].Labels.Add("Коэфф. эффективности: "
-                + stat.Info.inter[0].times.efficiency.ToString("F3"));
-            xaxis[3].Labels.Add("Файл: "
-                + stat.Info.inter[0].id.pname);
-            data[0].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].times.insuf_sys));
-            data[1].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].times.insuf_user));
-            data[2].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].times.idle));
-            data[3].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].times.comm));
-
+            var xaxis = new CategoryAxis
+            {
+                Title = "Процессоры",
+                AbsoluteMinimum = -0.5
+            };
+            for (int i = 0; i < stat.Info.nproc; ++i) { 
+                data[0].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].insuf_sys));
+                data[1].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].insuf_user));
+                data[2].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].idle));
+                data[3].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].comm));
+            }
             for (int i = 0; i < 4; ++i)
             {
-                model.Axes.Add(xaxis[i]);
                 model.Series.Add(data[i]);
             }
+            model.Axes.Add(xaxis);
             model.Axes.Add(yaxis);
 
             return model;
@@ -245,5 +199,105 @@ namespace Analyzer
             popover.Show(new CGRect(clickPoint, new CGSize(1, 1)),
                    model.PlotView as PlotView, NSRectEdge.MinXEdge);
         }
+
+        public static PlotModel GPUComparePlot(int intervalNum = 0, double maxTime = -1)
+        {
+            var model = new PlotModel
+            {
+                Title = "ГПУ"
+            };
+
+            //---  Init axi  ---//
+            (_, var xaxis) = InitDataAndXaxis(intervalNum);
+
+            //---  Init data  ---//
+            LineSeries prodGPU = new LineSeries
+            {
+                Title = "Продуктивное время на ГПУ",
+                Color = OxyColors.LawnGreen,
+                MarkerType = MarkerType.Diamond,
+                MarkerSize = 5,
+                MarkerFill = OxyColors.Snow,
+                MarkerResolution = 5,
+                MarkerStroke = OxyColors.LawnGreen,
+                MarkerStrokeThickness = 3,
+                LineStyle = LineStyle.Dash
+            };
+            LineSeries lostGPU = new LineSeries
+            {
+                Title = "Потерянное время на ГПУ",
+                Color = OxyColors.Salmon,
+                MarkerType = MarkerType.Diamond,
+                MarkerSize = 5,
+                MarkerFill = OxyColors.Snow,
+                MarkerStroke = OxyColors.Salmon,
+                MarkerStrokeThickness = 3,
+                LineStyle = LineStyle.Dash
+            };
+            LineSeries execTime = new LineSeries
+            {
+                Title = "Время выполнения",
+                Color = OxyColors.RoyalBlue,
+                MarkerType = MarkerType.Diamond,
+                MarkerSize = 5,
+                MarkerFill = OxyColors.Snow,
+                MarkerStroke = OxyColors.RoyalBlue,
+                MarkerStrokeThickness = 3,
+                LineStyle = LineStyle.Dash
+            };
+
+            var yaxis = new LinearAxis();
+            yaxis.Position = AxisPosition.Left;
+            yaxis.MajorGridlineStyle = LineStyle.Dot;
+            yaxis.MinorGridlineStyle = LineStyle.Dot;
+            yaxis.Title = "Время, с";
+            yaxis.AxisTitleDistance = 7;
+            yaxis.AbsoluteMinimum = 0;
+            if (maxTime > 0)
+                yaxis.Maximum = maxTime;
+            yaxis.Key = "Time";
+
+            List<IntervalJson> intervals = ViewController.CompareList.IntervalsList[intervalNum];
+
+            for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
+            {
+                xaxis[0].Labels.Add("Кол-во ГПУ: "
+                    + ViewController.CompareList.At(i).NumGPU);
+                xaxis[1].Labels.Add("Время выполнения: "
+                    + ViewController.CompareList.At(i).Info.inter[0].times.exec_time.ToString("F3"));
+                xaxis[2].Labels.Add("Коэфф. эффективности: "
+                    + ViewController.CompareList.At(i).Info.inter[0].times.efficiency.ToString("F3"));
+                xaxis[3].Labels.Add("Файл: "
+                    + ViewController.CompareList.At(i).Info.inter[0].id.pname);
+                prodGPU.Points.Add(new DataPoint(i, intervals[i].times.gpu_time_prod));
+                lostGPU.Points.Add(new DataPoint(i, intervals[i].times.gpu_time_lost));
+                execTime.Points.Add(new DataPoint(i, intervals[i].times.exec_time));
+            }
+
+            for (int i = 0; i < 4; ++i)
+            {
+                model.Axes.Add(xaxis[i]);
+            }
+            model.Series.Add(prodGPU);
+            model.Series.Add(lostGPU);
+            model.Series.Add(execTime);
+            model.Axes.Add(yaxis);
+
+            return model;
+        }
+
+        public PlotModel ProcessPlot(int intervalNum = 0, double maxTime = -1)
+        {
+            var model = new PlotModel
+            {
+                Title = "Процессоры"
+            };
+
+            //---  Init axis  ---//
+
+
+            return model;
+        }
+
     }
 }

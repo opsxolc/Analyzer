@@ -71,6 +71,7 @@ namespace Analyzer
                 return;
             int i = 1;
             Info = intervals[0];
+            //TODO: Добавить чтение текста по надобности
             try { 
                 var Lines = File.ReadLines(dir + '/' + Info.id.pname);
                 for (int j = Info.id.nline - 1; j < Info.id.nline_end; ++j)

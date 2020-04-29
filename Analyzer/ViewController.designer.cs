@@ -16,6 +16,9 @@ namespace Analyzer
 		AppKit.NSTextField ChooseLabel { get; set; }
 
 		[Outlet]
+		AppKit.NSPopUpButton CompareDiagramSelect { get; set; }
+
+		[Outlet]
 		AppKit.NSOutlineView CompareIntervalTree { get; set; }
 
 		[Outlet]
@@ -25,10 +28,13 @@ namespace Analyzer
 		AppKit.NSSplitView CompareSplitView { get; set; }
 
 		[Outlet]
-		AppKit.NSTextView InterText { get; set; }
+		OxyPlot.Xamarin.Mac.PlotView GPUPlotView { get; set; }
 
 		[Outlet]
-		AppKit.NSPopUpButton InterTreePlotTypeController { get; set; }
+		AppKit.NSStackView GPUStackView { get; set; }
+
+		[Outlet]
+		AppKit.NSTextView InterText { get; set; }
 
 		[Outlet]
 		OxyPlot.Xamarin.Mac.PlotView InterTreePlotView { get; set; }
@@ -44,6 +50,9 @@ namespace Analyzer
 
 		[Outlet]
 		AppKit.NSOutlineView InterView { get; set; }
+
+		[Outlet]
+		AppKit.NSSplitView PlotSplitView { get; set; }
 
 		[Outlet]
 		OxyPlot.Xamarin.Mac.PlotView plotView { get; set; }
@@ -65,6 +74,9 @@ namespace Analyzer
 
 		[Action ("CompareBack:")]
 		partial void CompareBack (Foundation.NSObject sender);
+
+		[Action ("CompareDiagramSelect_Activated:")]
+		partial void CompareDiagramSelect_Activated (Foundation.NSObject sender);
 
 		[Action ("CompareReset:")]
 		partial void CompareReset (Foundation.NSObject sender);
@@ -92,12 +104,23 @@ namespace Analyzer
 
 		[Action ("SelectionChanged:")]
 		partial void SelectionChanged (AppKit.NSOutlineView sender);
+
+		[Action ("StatGPUButton:")]
+		partial void StatGPUButton (Foundation.NSObject sender);
+
+		[Action ("StatGPUButton_Activated:")]
+		partial void StatGPUButton_Activated (Foundation.NSObject sender);
 		
 		void ReleaseDesignerOutlets ()
 		{
 			if (ChooseLabel != null) {
 				ChooseLabel.Dispose ();
 				ChooseLabel = null;
+			}
+
+			if (CompareDiagramSelect != null) {
+				CompareDiagramSelect.Dispose ();
+				CompareDiagramSelect = null;
 			}
 
 			if (CompareIntervalTree != null) {
@@ -115,9 +138,34 @@ namespace Analyzer
 				CompareSplitView = null;
 			}
 
+			if (GPUPlotView != null) {
+				GPUPlotView.Dispose ();
+				GPUPlotView = null;
+			}
+
+			if (GPUStackView != null) {
+				GPUStackView.Dispose ();
+				GPUStackView = null;
+			}
+
 			if (InterText != null) {
 				InterText.Dispose ();
 				InterText = null;
+			}
+
+			if (InterTreePlotView != null) {
+				InterTreePlotView.Dispose ();
+				InterTreePlotView = null;
+			}
+
+			if (InterTreeSegmentController != null) {
+				InterTreeSegmentController.Dispose ();
+				InterTreeSegmentController = null;
+			}
+
+			if (InterTreeSplitView != null) {
+				InterTreeSplitView.Dispose ();
+				InterTreeSplitView = null;
 			}
 
 			if (IntervalCompareButton != null) {
@@ -130,6 +178,11 @@ namespace Analyzer
 				InterView = null;
 			}
 
+			if (PlotSplitView != null) {
+				PlotSplitView.Dispose ();
+				PlotSplitView = null;
+			}
+
 			if (plotView != null) {
 				plotView.Dispose ();
 				plotView = null;
@@ -140,29 +193,9 @@ namespace Analyzer
 				StatPath = null;
 			}
 
-			if (InterTreeSegmentController != null) {
-				InterTreeSegmentController.Dispose ();
-				InterTreeSegmentController = null;
-			}
-
-			if (InterTreePlotTypeController != null) {
-				InterTreePlotTypeController.Dispose ();
-				InterTreePlotTypeController = null;
-			}
-
 			if (StatTableView != null) {
 				StatTableView.Dispose ();
 				StatTableView = null;
-			}
-
-			if (InterTreeSplitView != null) {
-				InterTreeSplitView.Dispose ();
-				InterTreeSplitView = null;
-			}
-
-			if (InterTreePlotView != null) {
-				InterTreePlotView.Dispose ();
-				InterTreePlotView = null;
 			}
 
 			if (TableHeader != null) {

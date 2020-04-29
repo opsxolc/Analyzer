@@ -44,7 +44,6 @@ namespace Analyzer
             InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
             InterTreeSegmentController.SetSelected(false, 1);
             InterTreeSegmentController.SetSelected(true, 0);
-            InterTreePlotTypeController.SelectItem(0);
         }
 
         // Добавить статистику в StatTableView
@@ -125,16 +124,16 @@ namespace Analyzer
                 Animates = true,
                 ContentViewController = helpViewController
             };
-            //TODO: Написать нормальную помощь
             helpIntervalCompare.Activated += (object sender, EventArgs e)
                 => helpPopover.Show(new CGRect(helpIntervalCompare.Frame.Location, new CGSize(200, 180)),
                    TableHeader, NSRectEdge.MaxYEdge);
 
             TableHeader.AddSubview(helpIntervalCompare);
 
-
+            //---  Init Compare Controls  ---//
             CompareSort.Enabled = false;
             IntervalCompareButton.Enabled = false;
+            CompareDiagramSelect.Enabled = false;
             CompareSort.RemoveAllItems();
             string[] CompareItems = { "Кол-во процессоров", "Потерянное время",
                 "Время выполнения",  "Коэф. эффективности"};
@@ -145,8 +144,18 @@ namespace Analyzer
             {
                 // TODO: Мб, для этого есть нормальное решение?
                 var selectedRow = (int)CompareIntervalTree.SelectedRow;
-                PlotMaker.SortPlot(plotView, CompareSort.TitleOfSelectedItem,
-                selectedRow);
+                CompareList.Sort(CompareSort.TitleOfSelectedItem, selectedRow);
+                switch (plotView.Model.Title)
+                {
+                    case "Потерянное время":
+                        plotView.Model = PlotMaker.LostTimeComparePlot(selectedRow,
+                            plotView.Model.GetAxis("Time").ActualMaximum);
+                        break;
+                    case "ГПУ":
+                        plotView.Model = PlotMaker.GPUComparePlot(selectedRow,
+                            plotView.Model.GetAxis("Time").ActualMaximum);
+                        break;
+                }
                 CompareIntervalTree.ReloadData();
                 CompareIntervalTree.SelectRow(selectedRow, false);
             };
@@ -193,7 +202,7 @@ namespace Analyzer
         {
             var item = InterView.ItemAtRow(InterView.SelectedRow) as Interval;
             InterText.Value = item.Text;
-            InterTreePlotView.Model = PlotMaker.LostTimePlot(LoadedStat, item.Row, plotStatMaxTime);
+            InterTreePlotView.Model = PlotMaker.ProcLostTimePlot(LoadedStat, item.Row, plotStatMaxTime);
         }
 
         private void SetDataToInterView(Stat stat)
@@ -236,16 +245,21 @@ namespace Analyzer
             FileStream file = File.Create(TmpDirPath + "/stat.json");
             file.Write(new UTF8Encoding(true).GetBytes(res));
             file.Close();
-            try { 
-                File.Copy(TmpFileLocDir + '/' + stat.Info.inter[0].id.pname,
-                    TmpDirPath + '/' + stat.Info.inter[0].id.pname);
-            } catch (Exception) {
-                Console.WriteLine("Could not open file");
+            foreach (var inter in stat.Info.inter)
+            {
+                if (!File.Exists(TmpDirPath + '/' + inter.id.pname))
+                    try
+                    {
+                        if (File.Exists(TmpFileLocDir + '/' + inter.id.pname))
+                            File.Copy(TmpFileLocDir + '/' + inter.id.pname,
+                                TmpDirPath + '/' + inter.id.pname);
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("Could not copy file '" + inter.id.pname + "'");
+                    }
             }
             AddStatToList(stat, creationTime);
-
-            //---  Set data to InterView  ---//
-            //SetDataToInterView(stat);
         }
 
         partial void LoadStat(NSObject sender)
@@ -313,10 +327,11 @@ namespace Analyzer
             //---  Hide label and set plot  ---//
             ChooseLabel.Hidden = true;
             CompareSort.Enabled = true;
+            CompareDiagramSelect.Enabled = true;
             IntervalCompareButton.Enabled = true;
             plotView.Model = PlotMaker.LostTimeComparePlot();
             plotCompareMaxTime = plotView.Model.GetAxis("Time").ActualMaximum;
-            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(plotCompareMaxTime);
+            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).maxTimeLost = plotCompareMaxTime;
 
             //---  Set CompareIntervalTree  ---//
             ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals.Clear();
@@ -340,9 +355,13 @@ namespace Analyzer
         {
             plotView.Model = null;
             CompareSort.Enabled = false;
+            CompareDiagramSelect.Enabled = false;
+            CompareDiagramSelect.SelectItem(0);
+            CompareSort.SelectItem(0);
             ChooseLabel.Hidden = false;
             IntervalCompareButton.Enabled = false;
-            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).SetMaxTime(-1);
+            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).maxTimeLost = -1;
+            ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).maxTimeGPU = -1;
             ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals.Clear();
             CompareIntervalTree.ReloadData();
             CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width, 0);
@@ -385,6 +404,38 @@ namespace Analyzer
                     InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
                 });
 
+        }
+
+        partial void CompareDiagramSelect_Activated(NSObject sender)
+        {
+            var s = sender as NSPopUpButton;
+            double newMax;
+            switch (s.TitleOfSelectedItem)
+            {
+                case "Потерянное время ЦПУ":
+                    if (plotView.Model.Title == "Потерянное время")
+                        return;
+                    plotView.Model = PlotMaker.LostTimeComparePlot();
+                    newMax = plotView.Model.GetAxis("Time").ActualMaximum;
+                    ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).maxTimeLost = newMax;
+                    Console.WriteLine("CPU NewMax = " + newMax);
+                    plotView.Model = PlotMaker.LostTimeComparePlot((int)CompareIntervalTree.SelectedRow, newMax);
+                    break;
+                case "Сравнение ГПУ":
+                    if (plotView.Model.Title == "ГПУ")
+                        return;
+                    plotView.Model = PlotMaker.GPUComparePlot();
+                    newMax = plotView.Model.GetAxis("Time").ActualMaximum;
+                    ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).maxTimeGPU = newMax;
+                    Console.WriteLine("GPU NewMax = " + newMax);
+                    plotView.Model = PlotMaker.GPUComparePlot((int)CompareIntervalTree.SelectedRow, newMax);
+                    break;
+            }
+        }
+
+        partial void StatGPUButton_Activated(NSObject sender)
+        {
+            //GPUStackView.AddView(new GPUView(), NSStackViewGravity.Top);
         }
 
     }

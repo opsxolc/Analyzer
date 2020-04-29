@@ -16,19 +16,30 @@ namespace Analyzer
         private const string CellIdentifier = "IntervalCell";
         private PlotView plotView;
         private NSOutlineView outlineView;
-        private double maxTime;
+        public double maxTimeLost;
+        public double maxTimeGPU;
 
-        public IntervalCompareOutlineDelegate(NSOutlineView outlineView, PlotView plotView){
+        public IntervalCompareOutlineDelegate(NSOutlineView outlineView, PlotView plotView) {
             this.plotView = plotView;
             this.outlineView = outlineView;
-            maxTime = -1;
+            maxTimeLost = -1;
+            maxTimeGPU = -1;
         }
 
-        public void SetMaxTime(double maxTime) => this.maxTime = maxTime;
-
-        public override void SelectionDidChange(NSNotification notification)
-            => plotView.Model = PlotMaker
-                .LostTimeComparePlot(((Interval)outlineView.ItemAtRow(outlineView.SelectedRow)).Row, maxTime);
+        public override void SelectionDidChange(NSNotification notification) {
+            switch (plotView.Model.Title) {
+                case "Потерянное время":
+                    plotView.Model = PlotMaker
+                        .LostTimeComparePlot(((Interval) outlineView.ItemAtRow(outlineView.SelectedRow)).Row,
+                        maxTimeLost);
+                    break;
+                case "ГПУ":
+                    plotView.Model = PlotMaker
+                        .GPUComparePlot(((Interval)outlineView.ItemAtRow(outlineView.SelectedRow)).Row,
+                        maxTimeGPU);
+                    break;
+            }
+        }
 
         public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
         {
@@ -143,13 +154,13 @@ namespace Analyzer
         {
             var gradientLayer = new CAGradientLayer();
             List<CGColor> colors = new List<CGColor>();
-            if (inter.times.comm >= 0.2 * maxTime)
+            if (inter.times.comm >= 0.2 * maxTimeLost)
                 colors.Add(OxyColors.GreenYellow.ToCGColor());
-            if (inter.times.idle >= 0.2 * maxTime)
+            if (inter.times.idle >= 0.2 * maxTimeLost)
                 colors.Add(OxyColors.LightSkyBlue.ToCGColor());
-            if (inter.times.insuf_user >= 0.2 * maxTime)
+            if (inter.times.insuf_user >= 0.2 * maxTimeLost)
                 colors.Add(OxyColors.Orchid.ToCGColor());
-            if (inter.times.insuf_sys >= 0.2 * maxTime)
+            if (inter.times.insuf_sys >= 0.2 * maxTimeLost)
                 colors.Add(OxyColors.Pink.ToCGColor());
             if (colors.Count == 1)
                 colors.Add(colors[0]);

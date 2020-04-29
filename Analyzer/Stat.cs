@@ -59,20 +59,27 @@ namespace Analyzer
                 + " exec_time: " + Info.inter[0].times.exec_time;
         }
 
-        public static void CompareStats(Stat stat1, Stat stat2, out Stat res1, out Stat res2)
+        //public static void CompareStats(Stat stat1, Stat stat2, out Stat res1, out Stat res2)
+        //{
+        //    string res_str1, res_str2;
+        //    if (LibraryImport.stat_intersect_(stat1.ToJson(), stat2.ToJson(), out res_str1, out res_str2) != 0)
+        //        throw new Exception("Problems with library import function");
+        //    res1 = new Stat(res_str1, stat1.Dir);
+        //    res2 = new Stat(res_str2, stat2.Dir);
+        //}
+
+        public uint NumGPU
         {
-            string res_str1, res_str2;
-            if (LibraryImport.stat_intersect_(stat1.ToJson(), stat2.ToJson(), out res_str1, out res_str2) != 0)
-                throw new Exception("Problems with library import function");
-            res1 = new Stat(res_str1, stat1.Dir);
-            res2 = new Stat(res_str2, stat2.Dir);
+            get
+            {
+                uint result = 0;
+                for (int i = 0; i < Info.nproc; ++i)
+                {
+                    result += (uint)Info.inter[0].proc_times[i].num_gpu;
+                }
+                return result;
+            }
         }
 
-        public string GetLabel()
-        {
-            return "Кол-во проц.: " + Info.nproc + "\n"
-                + "Время выполн.: " + Info.inter[0].times.exec_time + "\n"
-                + "Коэф. эффект.: " + Info.inter[0].times.efficiency;
-        }
     }
 }
