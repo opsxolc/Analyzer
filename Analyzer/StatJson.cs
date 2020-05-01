@@ -19,7 +19,6 @@ namespace Analyzer
         public static string GetJson(StatJson stat) => JsonConvert.SerializeObject(stat);
     }
 
-    // TODO: Получать попроцессорные значения
     public struct StatJson
     {
         public int nproc;
@@ -73,24 +72,19 @@ namespace Analyzer
     {
         public string gpu_name;
         public double prod_time;
-        public double kernel_exec;
-        public double loop_exec;
         public double lost_time;
-        public double get_actual;
-        public double data_reorg;
-        public double reduction;
-        public double gpu_runtime_compilation;
-        public double gpu_to_cpu;
-        public double cpu_to_gpu;
-        public double gpu_to_gpu;
-        public List<OpTimesJson> op_times;
+        public List<GPUMetricJson> metrics;
     }
 
-    public struct OpTimesJson
+    public struct GPUMetricJson
     {
-        public double cpu_to_gpu;
-        public double gpu_to_gpu;
-        public double gpu_to_cpu;
+        public uint countMeasures;
+        public double timeProductive;
+        public double timeLost;
+        public double min;
+        public double mean;
+        public double max;
+        public double sum;
     }
 
     public struct ThTimesJson

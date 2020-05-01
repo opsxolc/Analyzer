@@ -20,6 +20,8 @@ namespace Analyzer
     {
         public static CGPoint clickPoint = new CGPoint(0,0);
 
+        private static DateTime procSelectionLastClick = DateTime.Now;
+
         private static (List<ColumnSeries> data, List<CategoryAxis> xaxis) InitDataAndXaxis(int interNum, bool popover = true)
         {
             List<CategoryAxis> xaxis = new List<CategoryAxis>();
@@ -123,7 +125,8 @@ namespace Analyzer
             return model;
         }
 
-        public static PlotModel ProcLostTimePlot(Stat stat, int intervalNum = 0, double maxTime = -1)
+        public static PlotModel ProcLostTimePlot(Stat stat, ViewController viewController,
+            int intervalNum = 0, double maxTime = -1)
         {
             var model = new PlotModel
             {
@@ -149,7 +152,8 @@ namespace Analyzer
                 Title = "Процессоры",
                 AbsoluteMinimum = -0.5
             };
-            for (int i = 0; i < stat.Info.nproc; ++i) { 
+            for (int i = 0; i < stat.Info.nproc; ++i) {
+                xaxis.Labels.Add((i + 1).ToString());
                 data[0].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].insuf_sys));
                 data[1].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].insuf_user));
                 data[2].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].idle));
@@ -157,12 +161,54 @@ namespace Analyzer
             }
             for (int i = 0; i < 4; ++i)
             {
+                data[i].MouseDown += (object sender, OxyMouseDownEventArgs e)
+                    => ProcLostTimePlot_MouseDown(sender, e, viewController);
                 model.Series.Add(data[i]);
             }
             model.Axes.Add(xaxis);
             model.Axes.Add(yaxis);
-
+            model.MouseDown += (object sender, OxyMouseDownEventArgs e)
+                => ProcLostTimePlotModel_MouseDown(sender, e, model, viewController);
             return model;
+        }
+
+        private static void ProcLostTimePlotModel_MouseDown(object sender, OxyMouseDownEventArgs e,
+            PlotModel model, ViewController viewController)
+        {
+            if (e.HitTestResult is null && e.ClickCount >= 2)
+            {
+                foreach (var ser in model.Series)
+                {
+                    var color = (ser as ColumnSeries).FillColor;
+                    model.InvalidatePlot(true);
+                    for (int j = 0; j < (ser as ColumnSeries).Items.Count; ++j)
+                        (ser as ColumnSeries).Items[j].Color = color.ChangeSaturation(1);
+                }
+                viewController.DeselectProcessors();
+            }
+        }
+
+        private static void ProcLostTimePlot_MouseDown(object sender, OxyMouseEventArgs e,
+            ViewController viewController)
+        {
+            DateTime now = DateTime.Now;
+            if (now.Subtract(procSelectionLastClick).TotalMilliseconds < 500.0)
+            {
+                var s = sender as ColumnSeries;
+                var nearest = s.GetNearestPoint(e.Position, false);
+                var i = (int)nearest.DataPoint.X;
+                var model = s.PlotModel;
+                foreach (var ser in model.Series)
+                {
+                    var color = (ser as ColumnSeries).FillColor;
+                    model.InvalidatePlot(true);
+                    for (int j = 0; j < (ser as ColumnSeries).Items.Count; ++j)
+                        (ser as ColumnSeries).Items[j].Color =
+                            color.ChangeSaturation((j == i) ? 1 : 0.5);
+                }
+                viewController.SelectProcessor(i);
+            }
+            procSelectionLastClick = now;
         }
 
         private static void Model_MouseDown(object sender, OxyMouseDownEventArgs e, int interNum)
@@ -282,19 +328,6 @@ namespace Analyzer
             model.Series.Add(lostGPU);
             model.Series.Add(execTime);
             model.Axes.Add(yaxis);
-
-            return model;
-        }
-
-        public PlotModel ProcessPlot(int intervalNum = 0, double maxTime = -1)
-        {
-            var model = new PlotModel
-            {
-                Title = "Процессоры"
-            };
-
-            //---  Init axis  ---//
-
 
             return model;
         }

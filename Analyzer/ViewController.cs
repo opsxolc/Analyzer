@@ -78,6 +78,7 @@ namespace Analyzer
         {
             base.ViewDidLoad();
             // Do any additional setup after loading the view.
+            GPUScrollView.DocumentView = GPUStackView;
             LoadStatList();
             InitDataInterView();
             InitInterTree();
@@ -202,7 +203,7 @@ namespace Analyzer
         {
             var item = InterView.ItemAtRow(InterView.SelectedRow) as Interval;
             InterText.Value = item.Text;
-            InterTreePlotView.Model = PlotMaker.ProcLostTimePlot(LoadedStat, item.Row, plotStatMaxTime);
+            InterTreePlotView.Model = PlotMaker.ProcLostTimePlot(LoadedStat, this, item.Row, plotStatMaxTime);
         }
 
         private void SetDataToInterView(Stat stat)
@@ -403,7 +404,7 @@ namespace Analyzer
                     a.Duration = 0.5;
                     InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
                 });
-
+            DeselectProcessors();
         }
 
         partial void CompareDiagramSelect_Activated(NSObject sender)
@@ -433,9 +434,44 @@ namespace Analyzer
             }
         }
 
+        public void SelectProcessor(int i)
+        {
+            DeselectProcessors(); // Отчищаем StackView
+            var v1 = storyboard.InstantiateControllerWithIdentifier("GPUId") as GPUViewController;
+            v1.LoadView();
+            //Console.WriteLine(LoadedStat.NumGPU);
+            //v1.Init(LoadedStat.Info.inter[0].proc_times[0].gpu_times[0]);
+            var h = v1.Height;
+
+            var v2 = storyboard.InstantiateControllerWithIdentifier("GPUId") as GPUViewController;
+            v2.LoadView();
+            //v2.Init("GPU #2");
+            h += v2.Height;
+
+
+            var v3 = storyboard.InstantiateControllerWithIdentifier("GPUId") as GPUViewController;
+            v3.LoadView();
+            //v3.Init("GPU #3");
+            h += v3.Height;
+
+
+            GPUStackView.SetFrameSize(new CGSize(450, h + 10));
+
+            GPUStackView.AddView(v1.View, NSStackViewGravity.Top);
+            GPUStackView.AddView(v2.View, NSStackViewGravity.Top);
+            GPUStackView.AddView(v3.View, NSStackViewGravity.Top);
+        }
+
+        public void DeselectProcessors()
+        {
+            for (int i = GPUStackView.Views.Length - 1; i >= 0; --i)
+                GPUStackView.Views[i].RemoveFromSuperview();
+        }
+
         partial void StatGPUButton_Activated(NSObject sender)
         {
-            //GPUStackView.AddView(new GPUView(), NSStackViewGravity.Top);
+            
+
         }
 
     }

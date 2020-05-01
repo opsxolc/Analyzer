@@ -35,19 +35,14 @@ namespace Analyzer
 		
 		void ReleaseDesignerOutlets ()
 		{
-			if (IdleLevel != null) {
-				IdleLevel.Dispose ();
-				IdleLevel = null;
-			}
-
 			if (IdleLabel != null) {
 				IdleLabel.Dispose ();
 				IdleLabel = null;
 			}
 
-			if (LoadLevel != null) {
-				LoadLevel.Dispose ();
-				LoadLevel = null;
+			if (IdleLevel != null) {
+				IdleLevel.Dispose ();
+				IdleLevel = null;
 			}
 
 			if (LoadLabel != null) {
@@ -55,9 +50,14 @@ namespace Analyzer
 				LoadLabel = null;
 			}
 
-			if (VarLevel != null) {
-				VarLevel.Dispose ();
-				VarLevel = null;
+			if (LoadLevel != null) {
+				LoadLevel.Dispose ();
+				LoadLevel = null;
+			}
+
+			if (ReasonLabel != null) {
+				ReasonLabel.Dispose ();
+				ReasonLabel = null;
 			}
 
 			if (VarLabel != null) {
@@ -65,9 +65,9 @@ namespace Analyzer
 				VarLabel = null;
 			}
 
-			if (ReasonLabel != null) {
-				ReasonLabel.Dispose ();
-				ReasonLabel = null;
+			if (VarLevel != null) {
+				VarLevel.Dispose ();
+				VarLevel = null;
 			}
 		}
 	}

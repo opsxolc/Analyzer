@@ -31,6 +31,9 @@ namespace Analyzer
 		OxyPlot.Xamarin.Mac.PlotView GPUPlotView { get; set; }
 
 		[Outlet]
+		AppKit.NSScrollView GPUScrollView { get; set; }
+
+		[Outlet]
 		AppKit.NSStackView GPUStackView { get; set; }
 
 		[Outlet]
@@ -141,6 +144,11 @@ namespace Analyzer
 			if (GPUPlotView != null) {
 				GPUPlotView.Dispose ();
 				GPUPlotView = null;
+			}
+
+			if (GPUScrollView != null) {
+				GPUScrollView.Dispose ();
+				GPUScrollView = null;
 			}
 
 			if (GPUStackView != null) {
