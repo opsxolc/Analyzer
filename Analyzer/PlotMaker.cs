@@ -13,7 +13,7 @@ namespace Analyzer
 
     public interface PlotPopoverInterface
     {
-        CGSize Init(int statNum, int interNum);
+        CGSize Init(int statNum, int interNum, NSWindow window = null);
     }
 
     public class PlotMaker 
@@ -101,8 +101,8 @@ namespace Analyzer
 
             for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
             {
-                xaxis[0].Labels.Add("Кол-во процессоров: "
-                    + ViewController.CompareList.At(i).Info.nproc);
+                xaxis[0].Labels.Add("Сетка: "
+                    + ViewController.CompareList.At(i).Info.p_heading.Replace('*', 'x'));
                 xaxis[1].Labels.Add("Время выполнения: "
                     + ViewController.CompareList.At(i).Info.inter[0].times.exec_time.ToString("F3"));
                 xaxis[2].Labels.Add("Коэфф. эффективности: "
@@ -158,17 +158,33 @@ namespace Analyzer
                 data[1].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].insuf_user));
                 data[2].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].idle));
                 data[3].Items.Add(new ColumnItem(stat.Info.inter[intervalNum].proc_times[i].comm));
+                //Console.WriteLine(intervalNum + " - " + i + "  |  "
+                //    + stat.Info.inter[intervalNum].proc_times[i].insuf_sys + " - "
+                //    + stat.Info.inter[intervalNum].proc_times[i].insuf_user + " - "
+                //    + stat.Info.inter[intervalNum].proc_times[i].idle + " - "
+                //    + stat.Info.inter[intervalNum].proc_times[i].comm);
             }
             for (int i = 0; i < 4; ++i)
             {
                 data[i].MouseDown += (object sender, OxyMouseDownEventArgs e)
-                    => ProcLostTimePlot_MouseDown(sender, e, viewController);
+                    => ProcLostTimePlot_MouseDown(sender, e, viewController, intervalNum);
                 model.Series.Add(data[i]);
             }
             model.Axes.Add(xaxis);
             model.Axes.Add(yaxis);
             model.MouseDown += (object sender, OxyMouseDownEventArgs e)
                 => ProcLostTimePlotModel_MouseDown(sender, e, model, viewController);
+
+            if (ViewController.SelectedProc >= 0)
+                foreach (var ser in model.Series)
+                {
+                    var color = (ser as ColumnSeries).FillColor;
+                    model.InvalidatePlot(true);
+                    for (int j = 0; j < (ser as ColumnSeries).Items.Count; ++j)
+                        (ser as ColumnSeries).Items[j].Color =
+                            color.ChangeSaturation((j == ViewController.SelectedProc) ? 1 : 0.5);
+                }
+
             return model;
         }
 
@@ -189,7 +205,7 @@ namespace Analyzer
         }
 
         private static void ProcLostTimePlot_MouseDown(object sender, OxyMouseEventArgs e,
-            ViewController viewController)
+            ViewController viewController, int intervalNum)
         {
             DateTime now = DateTime.Now;
             if (now.Subtract(procSelectionLastClick).TotalMilliseconds < 500.0)
@@ -206,7 +222,7 @@ namespace Analyzer
                         (ser as ColumnSeries).Items[j].Color =
                             color.ChangeSaturation((j == i) ? 1 : 0.5);
                 }
-                viewController.SelectProcessor(i);
+                viewController.SelectProcessor(i, intervalNum);
             }
             procSelectionLastClick = now;
         }
@@ -232,7 +248,7 @@ namespace Analyzer
                 .InstantiateControllerWithIdentifier(name) as NSWindowController;
             var viewController = windowController.ContentViewController as PlotPopoverInterface;
 
-            CGSize size = viewController.Init((int)nearest.DataPoint.X, interNum);
+            CGSize size = viewController.Init((int)nearest.DataPoint.X, interNum, (model.PlotView as NSView).Window);
 
             var popover = new NSPopover
             {

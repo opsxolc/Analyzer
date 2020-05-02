@@ -14,7 +14,7 @@ namespace Analyzer
 		{
 		}
 
-		public CGSize Init(int statNum, int interNum)
+		public CGSize Init(int statNum, int interNum, NSWindow window = null)
         {
 
 			var inter = ViewController.CompareList.At(statNum).Interval.GetIntervalAt(interNum);

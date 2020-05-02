@@ -23,6 +23,7 @@ namespace Analyzer
     {
         public int nproc;
         public bool iscomp;
+        public string p_heading;
         public List<ProcInfoJson> proc;
         public List<IntervalJson> inter;
     }

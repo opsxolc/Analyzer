@@ -5,6 +5,8 @@ using Foundation;
 using System.Collections;
 using System.Collections.Generic;
 using CoreAnimation;
+using OxyPlot;
+using OxyPlot.Xamarin.Mac;
 
 namespace Analyzer
 {
@@ -54,49 +56,128 @@ namespace Analyzer
 
         public override NSView GetView(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
         {
-            // This pattern allows you reuse existing views when they are no-longer in use.
-            // If the returned view is null, you instance up a new view
-            // If a non-null view is returned, you modify it enough to reflect the new data
 
-            IntervalStackView view = (IntervalStackView)outlineView.MakeView(CellIdentifier, this);
-            NSTextField textView = (NSTextField)(view == null ? null : view.Subviews[0]);
+            NSClipView view = (NSClipView)outlineView.MakeView(CellIdentifier, this);
+            NSTextField exprView = (NSTextField)(view == null ? null : view.Subviews[0]);
+            NSTextField textView;
+            NSTextField textView1 = (NSTextField)(view == null ? null : view.Subviews[3]);
+
 
             // Cast item
             var interval = item as Interval;
 
             if (view == null)
             {
-                CAGradientLayer gradientLayer = new CAGradientLayer();
-                CGColor[] colors = { CGColor.CreateSrgb(1, 1, 1, 0),
-                    CGColor.CreateSrgb(0, 1, (nfloat)0.1, (nfloat)0.7) };
-                gradientLayer.Colors = colors;
-                gradientLayer.StartPoint = new CGPoint(.0, .0);
-                gradientLayer.EndPoint = new CGPoint(1.0, .0);
+                
 
-                view = new IntervalStackView(interval)
+                view = new NSClipView
                 {
-                    //Layer = gradientLayer,
-                    //WantsLayer = true,
-                    AutoresizesSubviews = false
+                    Identifier = CellIdentifier,
+                    AutoresizesSubviews = true,
+                    BackgroundColor = NSColor.Clear,
+                    AutoresizingMask = NSViewResizingMask.WidthSizable,
+                    WantsLayer = true
                 };
 
-                view.SetFrameSize(new CGSize(tableColumn.Width - 20, 50));
+                exprView = new NSTextField
+                {
+                    Alignment = NSTextAlignment.Center,
+                    Selectable = false,
+                    Editable = false,
+                    DrawsBackground = false,
+                    Bordered = false,
+                    LineBreakMode = NSLineBreakMode.Clipping
+                };
+
+                exprView.RotateByAngle(-90);
+
+                exprView.SetFrameOrigin(new CGPoint(0, 2));
+                exprView.SetFrameSize(new CGSize(13, 28));
+
+                NSBox line = new NSBox
+                {
+                    BoxType = NSBoxType.NSBoxSeparator
+                };
+
+                line.SetFrameSize(new CGSize(2, 23));
+                line.SetFrameOrigin(new CGPoint(exprView.Frame.Width + 3, 5));
 
                 textView = new NSTextField
                 {
-                    Identifier = CellIdentifier,
+                    Selectable = false,
+                    Editable = false,
+                    DrawsBackground = false,
+                    Bordered = false
+                };
+                textView.StringValue = "Время вып.\nКоэф.эффект.";
+                textView.SetFrameSize(textView.FittingSize);
+                textView.SetFrameOrigin(new CGPoint(line.Frame.Location.X + 10, 0));
+
+                textView1 = new NSTextField
+                {
                     Selectable = false,
                     Editable = false,
                     DrawsBackground = false,
                     Bordered = false
                 };
 
-                textView.SetFrameSize(new CGSize(tableColumn.Width - 130, 50));
+                textView1.SetFrameOrigin(new CGPoint(textView.Frame.Location.X + textView.Frame.Width + 3, 0));
+
+                view.AddSubview(exprView);
+                view.AddSubview(line);
+                view.AddSubview(textView);
+                view.AddSubview(textView1);
             }
 
+            CAGradientLayer gradientLayer = new CAGradientLayer();
+            List<CGColor> colors = new List<CGColor>();
+            colors.Add(OxyColors.Transparent.ToCGColor());
+            if (interval.Info.times.comm >= 0.2 * viewController.plotStatMaxTime)
+            {
+                colors.Insert(0, OxyColors.Transparent.ToCGColor());
+                colors.Add(OxyColors.GreenYellow.ToCGColor());
+            }
+            if (interval.Info.times.idle >= 0.2 * viewController.plotStatMaxTime)
+            {
+                colors.Insert(0, OxyColors.Transparent.ToCGColor());
+                colors.Add(OxyColors.LightSkyBlue.ToCGColor());
+            }
+            if (interval.Info.times.insuf_user >= 0.2 * viewController.plotStatMaxTime)
+            {
+                colors.Insert(0, OxyColors.Transparent.ToCGColor());
+                colors.Add(OxyColors.Orchid.ToCGColor());
+            }
+            if (interval.Info.times.insuf_sys >= 0.2 * viewController.plotStatMaxTime)
+            {
+                colors.Insert(0, OxyColors.Transparent.ToCGColor());
+                colors.Add(OxyColors.Pink.ToCGColor());
+            }
+            if (colors.Count == 1)
+                colors.Add(colors[0]);
+            gradientLayer.Colors = colors.ToArray();
+            gradientLayer.StartPoint = new CGPoint(.0, .0);
+            gradientLayer.EndPoint = new CGPoint(1.0, .0);
+            view.Layer = gradientLayer;
+
             // Setup view based on the column selected
-            textView.StringValue = "type - " + (InterTypes) interval.Info.id.t + "  expr - " + interval.Info.id.expr;
-            view.AddView(textView, NSStackViewGravity.Leading);
+            switch (interval.Info.id.t)
+            {
+                case (int)InterTypes.USER:
+                    exprView.StringValue = interval.Info.id.expr.ToString();
+                    break;
+                case (int)InterTypes.SEQ:
+                    exprView.StringValue = "Посл";
+                    exprView.Font = NSFont.FromFontName("Helvetica Neue", 10);
+                    break;
+                case (int)InterTypes.PAR:
+                    exprView.StringValue = "Пар";
+                    exprView.Font = NSFont.FromFontName("Helvetica Neue", 10);
+                    break;
+            }
+
+            textView1.StringValue = "➢   " + interval.Info.times.exec_time.ToString("F3") + "s\n"
+                + "➢   " + interval.Info.times.efficiency.ToString("F3");
+            textView1.SetFrameSize(textView1.FittingSize);
 
             return view;
         }

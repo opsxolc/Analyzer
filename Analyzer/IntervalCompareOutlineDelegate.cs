@@ -49,7 +49,6 @@ namespace Analyzer
 
             NSClipView view = (NSClipView)outlineView.MakeView(CellIdentifier, this);
             NSTextField exprView = (NSTextField)(view == null ? null : view.Subviews[0]);
-            NSBox line = (NSBox)((view == null) ? null : view.Subviews[1]);
 
             // Cast item
             var interval = item as Interval;
@@ -80,7 +79,7 @@ namespace Analyzer
                 exprView.SetFrameOrigin(new CGPoint(0, 2));
                 exprView.SetFrameSize(new CGSize(13, 28));
 
-                line = new NSBox
+                NSBox line = new NSBox
                 {
                     BoxType = NSBoxType.NSBoxSeparator
                 };

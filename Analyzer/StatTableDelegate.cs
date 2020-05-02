@@ -28,7 +28,7 @@ namespace Analyzer
                 if (tableColumn.Title == "Статистика выполнения")
                     view.StringValue = item.info;
                 else
-                    view.StringValue = item.creationTime;
+                    view.StringValue = item.creationTime.ToString();
             }
             return view;
         }

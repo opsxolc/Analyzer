@@ -14,7 +14,7 @@ namespace Analyzer
 		{
 		}
 
-		public CGSize Init(int statNum, int interNum)
+		public CGSize Init(int statNum, int interNum, NSWindow window)
 		{
 			//Console.WriteLine("Going to Init IdlePopover");
 			var stat = ViewController.CompareList.At(statNum);
@@ -31,7 +31,14 @@ namespace Analyzer
 			VarLevel.DoubleValue = inter.times.time_var / inter.times.idle * 100;
 			VarLabel.TextColor = (VarLevel.DoubleValue >= 80) ? NSColor.White : NSColor.Black;
 
+			ProcButton.Activated += (object sender, EventArgs e)
+				=>
+			{
+				var viewController = window.ContentViewController as ViewController;
+				viewController.SetDataToInterView(stat, interNum);
+				viewController.SelectTab(1);
+			};
 			return new CGSize(211, 172);
 		}
-	}
+    }
 }

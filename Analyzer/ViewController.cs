@@ -4,10 +4,8 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using AppKit;
-using CoreAnimation;
 using CoreGraphics;
 using Foundation;
-using Newtonsoft.Json;
 
 namespace Analyzer
 {
@@ -21,11 +19,12 @@ namespace Analyzer
         public static NSStoryboard storyboard = NSStoryboard.FromName("Main", null);
         private NSWindowController popoverWindowController;
         private PopoverController popoverViewController;
-        private double plotCompareMaxTime;
-        private double plotStatMaxTime;
+        public double plotCompareMaxTime;
+        public double plotStatMaxTime;
         private bool firstTime;
         private NSPopover helpPopover;
         public static Stat LoadedStat;
+        public static int SelectedProc = -1;
 
         public override void MouseDown(NSEvent theEvent)
         {
@@ -39,15 +38,21 @@ namespace Analyzer
 
         private void InitInterTree()
         {
+            DeselectProcessors();
             plotStatMaxTime = -1;
-            InterTreeSplitView.SetPositionOfDivider(310, 0);
+            InterTreeSplitView.SetPositionOfDivider(510, 0);
             InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
             InterTreeSegmentController.SetSelected(false, 1);
             InterTreeSegmentController.SetSelected(true, 0);
         }
 
+        public void SelectTab(int index)
+        {
+            TabView.SelectAt(index);
+        }
+
         // Добавить статистику в StatTableView
-        public void AddStatToList(Stat stat, string creationTime)
+        public void AddStatToList(Stat stat, DateTime creationTime)
         {
             ((StatTableDataSource)StatTableView.DataSource).StatDirs
                 .Add(new StatDir(StatDir.StatDirPath + '/' + stat.GetHashCode()
@@ -61,15 +66,18 @@ namespace Analyzer
             Regex dirNameRgx = new Regex(@"-?[0-9]*$");
             var DataSource = new StatTableDataSource();
             var dirs = Directory.GetDirectories(StatDir.StatDirPath);
-            string file, creationTime;
+            string file;
+            DateTime creationTime;
             foreach (string dir in dirs)
             {
                 file = Directory.GetFiles(dir, "*.json")[0];
-                creationTime = File.GetCreationTime(file).ToString();
+                creationTime = File.GetCreationTime(file);
                 Stat stat = new Stat(file);
                 DataSource.StatDirs.Add(new StatDir(file, creationTime,
                     dirNameRgx.Match(dir).Value, stat.GetInfoForStatDir()));
             }
+            DataSource.StatDirs.Sort((StatDir x, StatDir y)
+                => DateTime.Compare(x.creationTime, y.creationTime));
             StatTableView.DataSource = DataSource;
             StatTableView.Delegate = new StatTableDelegate();
         }
@@ -204,19 +212,23 @@ namespace Analyzer
             var item = InterView.ItemAtRow(InterView.SelectedRow) as Interval;
             InterText.Value = item.Text;
             InterTreePlotView.Model = PlotMaker.ProcLostTimePlot(LoadedStat, this, item.Row, plotStatMaxTime);
+            if (SelectedProc >= 0)
+                SelectProcessor(SelectedProc, item.Row);
         }
 
-        private void SetDataToInterView(Stat stat)
+        public void SetDataToInterView(Stat stat, int row = 0)
         {
+            LoadedStat = stat;
             InitInterTree();
+            InterTreePlotView.Model = PlotMaker.ProcLostTimePlot(LoadedStat, this, 0, plotStatMaxTime);
+            plotStatMaxTime = InterTreePlotView.Model.GetAxis("Time").ActualMaximum;
             InterText.Value = "";
             var intervals = ((IntervalOutlineDataSource)InterView.DataSource).Intervals;
             intervals.Clear();
             intervals.Add(stat.Interval);
             InterView.ReloadData();
             InterView.ExpandItem(InterView.ItemAtRow(0), true);
-            InterView.SelectRow(0, false);
-            plotStatMaxTime = InterTreePlotView.Model.GetAxis("Time").ActualMaximum;
+            InterView.SelectRow(row, false);
         }
 
         partial void CloseButton(Foundation.NSObject sender)
@@ -236,13 +248,20 @@ namespace Analyzer
             }
             // Директория с загружаемым файлом
             string TmpFileLocDir = Path.GetDirectoryName(StatPath.StringValue); 
-            Console.WriteLine(res);
-            stat = new Stat(res, TmpFileLocDir);
+            try
+            { 
+                stat = new Stat(res, TmpFileLocDir);
+            }
+            catch (Exception)
+            {
+                LibraryImport.read_stat_(StatPath.StringValue, out res);
+                stat = new Stat(res, TmpFileLocDir);
+            }
 
             //---  Save files  ---//
             string TmpDirPath = StatDir.StatDirPath + stat.GetHashCode();
             Directory.CreateDirectory(TmpDirPath);
-            string creationTime = DateTime.Now.ToString();
+            var creationTime = DateTime.Now;
             FileStream file = File.Create(TmpDirPath + "/stat.json");
             file.Write(new UTF8Encoding(true).GetBytes(res));
             file.Close();
@@ -265,7 +284,6 @@ namespace Analyzer
 
         partial void LoadStat(NSObject sender)
         {
-
             if (StatTableView.SelectedRowCount != 1) {
                 Alert.MessageText = "Пожалуйста, выберите одну " +
                     "запись для загрузки.";
@@ -273,10 +291,10 @@ namespace Analyzer
                 return;
             }
 
+            DeselectProcessors();
             StatDir statDir = ((StatTableDataSource)StatTableView.DataSource)
                 .StatDirs[(int)StatTableView.SelectedRow];
-            LoadedStat = new Stat(statDir.path);
-            SetDataToInterView(LoadedStat);
+            SetDataToInterView(new Stat(statDir.path, true));
             firstTime = false;
 
             //---  Switch active view   ---//
@@ -335,21 +353,18 @@ namespace Analyzer
             ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).maxTimeLost = plotCompareMaxTime;
 
             //---  Set CompareIntervalTree  ---//
+            CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width - 300, 0);
             ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals.Clear();
             ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals
                 .Add(CompareList.List[0].Interval);
             CompareIntervalTree.ReloadData();
             CompareIntervalTree.ExpandItem(CompareIntervalTree.ItemAtRow(0), true);
             CompareIntervalTree.SelectRow(0, false);
+            CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width, 0);
+            IntervalCompareButton.State = NSCellStateValue.Off;
 
             //--- Switch tab  ---//
             TabView.SelectAt(2);
-            if (firstTime)
-            {
-                CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width - 200, 0);
-                firstTime = false;
-            }
-
         }
 
         partial void CompareReset(NSObject sender)
@@ -357,10 +372,11 @@ namespace Analyzer
             plotView.Model = null;
             CompareSort.Enabled = false;
             CompareDiagramSelect.Enabled = false;
+            IntervalCompareButton.Enabled = false;
+            IntervalCompareButton.State = NSCellStateValue.Off;
             CompareDiagramSelect.SelectItem(0);
             CompareSort.SelectItem(0);
             ChooseLabel.Hidden = false;
-            IntervalCompareButton.Enabled = false;
             ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).maxTimeLost = -1;
             ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).maxTimeGPU = -1;
             ((IntervalOutlineDataSource)CompareIntervalTree.DataSource).Intervals.Clear();
@@ -386,7 +402,7 @@ namespace Analyzer
             var s = sender as NSSegmentedControl;
 
             if (s.IsSelectedForSegment(0) && InterTreePlotView.Frame.Width <= 20)
-                InterTreeSplitView.SetPositionOfDivider(310, 0);
+                InterTreeSplitView.SetPositionOfDivider(510, 0);
             else if (!s.IsSelectedForSegment(0))
                 InterTreeSplitView.SetPositionOfDivider(0, 0);
             
@@ -404,7 +420,6 @@ namespace Analyzer
                     a.Duration = 0.5;
                     InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
                 });
-            DeselectProcessors();
         }
 
         partial void CompareDiagramSelect_Activated(NSObject sender)
@@ -434,46 +449,70 @@ namespace Analyzer
             }
         }
 
-        public void SelectProcessor(int i)
-        {
-            DeselectProcessors(); // Отчищаем StackView
-            var v1 = storyboard.InstantiateControllerWithIdentifier("GPUId") as GPUViewController;
-            v1.LoadView();
-            //Console.WriteLine(LoadedStat.NumGPU);
-            //v1.Init(LoadedStat.Info.inter[0].proc_times[0].gpu_times[0]);
-            var h = v1.Height;
-
-            var v2 = storyboard.InstantiateControllerWithIdentifier("GPUId") as GPUViewController;
-            v2.LoadView();
-            //v2.Init("GPU #2");
-            h += v2.Height;
-
-
-            var v3 = storyboard.InstantiateControllerWithIdentifier("GPUId") as GPUViewController;
-            v3.LoadView();
-            //v3.Init("GPU #3");
-            h += v3.Height;
-
-
-            GPUStackView.SetFrameSize(new CGSize(450, h + 10));
-
-            GPUStackView.AddView(v1.View, NSStackViewGravity.Top);
-            GPUStackView.AddView(v2.View, NSStackViewGravity.Top);
-            GPUStackView.AddView(v3.View, NSStackViewGravity.Top);
-        }
-
-        public void DeselectProcessors()
+        private void ClearGPUStackView()
         {
             for (int i = GPUStackView.Views.Length - 1; i >= 0; --i)
                 GPUStackView.Views[i].RemoveFromSuperview();
         }
 
-        partial void StatGPUButton_Activated(NSObject sender)
+        public void SelectProcessor(int procNum, int intervalNum)
         {
-            
+            SelectedProc = procNum;
+            ClearGPUStackView();
+            var inter = LoadedStat.Info.inter[intervalNum];
 
+            //---  If there is no GPU return  ---//
+            if (inter.proc_times[procNum].gpu_times == null)
+                return;
+
+            //---  Init GPU-cards  ---//
+            nfloat maxSize = 0;
+            int i = 1;
+            foreach (var gpu in inter.proc_times[procNum].gpu_times)
+            {
+                var GPUCardController = storyboard.InstantiateControllerWithIdentifier("GPUId") as GPUViewController;
+                GPUCardController.LoadView();
+                GPUCardController.Init(gpu, i++);
+                GPUStackView.AddView(GPUCardController.View, NSStackViewGravity.Top);
+                if (GPUCardController.Height > maxSize)
+                    maxSize = GPUCardController.Height;
+            }
+
+            GPUStackView.SetFrameSize(new CGSize(675, maxSize * inter.proc_times[procNum].num_gpu + 5));
+
+            if (GPUScrollView.Frame.Height < 10)
+                PlotSplitView.SetPositionOfDivider(PlotSplitView.Frame.Height - 250, 0);
+            //TODO: Скроллить наверх
+            //CGPoint newScrollOrigin;
+            //if (GPUScrollView.ContentView.IsFlipped)
+            //    newScrollOrigin = new CGPoint(0.0, 0.0);
+            //else
+            //    newScrollOrigin = new CGPoint(0.0, (GPUScrollView.DocumentView as NSView).Frame.Height -
+            //                  GPUScrollView.Frame.Height/2 - 50);
+            //    //GPUScrollView.ContentView.ScrollToPoint(new CGPoint(0, maxSize * inter.proc_times[procNum].num_gpu - maxSize));
+            //GPUScrollView.ContentView.ScrollToPoint(newScrollOrigin);
         }
 
+        public void DeselectProcessors()
+        {
+            SelectedProc = -1;
+            ClearGPUStackView();
+            PlotSplitView.SetPositionOfDivider(PlotSplitView.Frame.Height, 0);
+        }
+
+        partial void ResetLoadStat(NSObject sender)
+        {
+            DeselectProcessors();
+            LoadedStat = null;
+            InterTreePlotView.Model = new OxyPlot.PlotModel();
+            ((IntervalOutlineDataSource)InterView.DataSource).Intervals.Clear();
+            InterView.ReloadData();
+            InterTreeSplitView.SetPositionOfDivider(0, 0);
+            InterTreeSegmentController.SetSelected(false, 0);
+            InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
+            InterTreeSegmentController.SetSelected(false, 1);
+            InterText.Value = "";
+        }
     }
 
 

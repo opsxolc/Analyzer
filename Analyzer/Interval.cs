@@ -10,8 +10,8 @@ namespace Analyzer
     {
         public List<Interval> Intervals = new List<Interval>();
         public IntervalJson Info;
-        public String Text = "";
-        public bool HasText;
+        public string Text = "";
+        public bool HasText = false;
         public int Row;
 
         public bool HasChildIntervals
@@ -64,7 +64,7 @@ namespace Analyzer
             }
         }
 
-        public Interval(List<IntervalJson> intervals, string dir, int row = 0)
+        public Interval(List<IntervalJson> intervals, string dir, bool withText, int row = 0)
         {
             Row = row;
             if (intervals == null)
@@ -72,33 +72,28 @@ namespace Analyzer
             int i = 1;
             Info = intervals[0];
             //TODO: Добавить чтение текста по надобности
-            try { 
-                var Lines = File.ReadLines(dir + '/' + Info.id.pname);
-                for (int j = Info.id.nline - 1; j < Info.id.nline_end; ++j)
-                    Text += Lines.ElementAt(j) + '\n';
-                HasText = true;
-            } catch (Exception e)
-            {
-                Text = e.Message;
-            }
+            if (withText)
+                try { 
+                    var Lines = File.ReadLines(dir + '/' + Info.id.pname);
+                    for (int j = Info.id.nline - 1; j < Info.id.nline_end; ++j)
+                        Text += Lines.ElementAt(j) + '\n';
+                    HasText = true;
+                } catch (Exception e)
+                {
+                    Text = e.Message;
+                }
             while (i < intervals.Count)
             {
-                Interval tmp = null;
                 if (intervals[i].id.nlev == Info.id.nlev + 1)
                 {
                     int j = i + 1;
                     while (j < intervals.Count && intervals[j].id.nlev > intervals[i].id.nlev)
                         ++j;
-                    Intervals.Add(tmp = new Interval(intervals.GetRange(i, j - i), dir, ++row));
+                    Intervals.Add(new Interval(intervals.GetRange(i, j - i), dir, withText, row + 1));
+                    row += j - i - 1;
                     i = j - 1;
                 }
-                if (tmp != null) {
-                    if (tmp.Intervals.Count > 0)
-                        row = tmp.Intervals[tmp.Intervals.Count - 1].Row;
-                    else
-                        row = tmp.Row;
-                }
-
+                ++row;
                 ++i;
             }
         }

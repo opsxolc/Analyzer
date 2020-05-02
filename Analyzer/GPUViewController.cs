@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace Analyzer
 {
     //---  Названия метрик для отображения ГПУ  ---//
-    enum DVMHStatMetricNames{
+    enum DVMHStatMetrics{
         DVMH_STAT_METRIC_KERNEL_EXEC,
         /* DVMH-CUDA memcpy */
         DVMH_STAT_METRIC_CPY_DTOH,
@@ -43,7 +43,7 @@ namespace Analyzer
 
     public partial class GPUViewController : NSViewController
 	{
-        public const int DVMHStatMetricCount = (int)DVMHStatMetricNames.DVMH_STAT_METRIC_FORCE_INT;
+        public const int DVMHStatMetricCount = (int)DVMHStatMetrics.DVMH_STAT_METRIC_FORCE_INT;
 
         public static readonly string[] dvmhStatMetricsTitles = {
                 "Kernel executions",
@@ -77,45 +77,88 @@ namespace Analyzer
         {
             get
             {
-                var res = 0;
-                for (int i = 0; i < GPUGridView.RowCount; ++i)
-                    if (GPUGridView.GetRow(i).Hidden)
-                        ++res;
-                return View.Frame.Height - res * 20;
+                return View.Frame.Height + (GPUGridView.RowCount - 1) * 18;
             }
         }
 
         public override void ViewDidLoad()
         {
             base.ViewDidLoad();
-            Console.WriteLine("Loaded");
-            //for (int i = 14; i > 5; --i)
-            //    GPUGridView.GetRow(i).Hidden = true;
-            View.NeedsUpdateConstraints = true;
+            GPUGridView.RowSpacing = 2;
         }
 
-        private NSTextField MakeLabel(string s)
+        private NSTextField MakeLabel(string s, bool bold = false)
         {
             var label = new NSTextField
             {
                 Bordered = false,
                 Editable = false,
+                DrawsBackground = false,
+                Font = NSFont.FromFontName("Helvetica Neue" + (bold ? " Bold" : ""), 11),
                 StringValue = s
             };
             label.SetFrameSize(label.FittingSize);
             return label;
         }
 
-        public void Init(GPUTimesJson gpu)
+        private string PrepareValue(double value, bool isPositive, bool isSize, bool dashOnZero, bool isTime)
         {
-            //Console.WriteLine("Init " + t);
-            GPUBox.Title = gpu.gpu_name;
-            //var c = GPUGridView.GetCell(1, 1);
-            //Console.WriteLine(c.ContentView);
-            //c.ContentView = MakeLabel("0.0508c");
-            //Console.WriteLine(GPUGridView.GetCell(1, 1).ContentView);
-            //c = GPUGridView.GetCell(1, 0);
-            //(c.ContentView as NSTextField).StringValue = "Cell!!";
+            if (isPositive && value < 0)
+                return "⏤";
+            if (value == 0 && dashOnZero)
+                return "⏤";
+            if (isSize)
+            {
+                if (value - 0.001 < 0) return "⏤";
+                if (value >= ((long)1 << 30))
+                    return (value / ((long)1 << 30)).ToString("F3") +"G";
+                if (value >= ((long)1 << 20))
+                    return (value / ((long)1 << 20)).ToString("F3") +"M";
+                if (value >= ((long)1 << 10))
+                    return (value / ((long)1 << 10)).ToString("F3") +"K";
+                if (value >= 0)
+                    return value.ToString("F3") + "B";
+                return "?";
+            }
+            if (isTime)
+                return value.ToString("F3") + "s";
+            return value.ToString("F3");
+        }
+
+        public void Init(GPUTimesJson gpu, int gpuNum)
+        {
+            GPUBox.Title = "GPU #" + gpuNum + "(" + gpu.gpu_name + ")";
+            for (int i = 0; i < DVMHStatMetricCount; ++i)
+            {
+                var metric = gpu.metrics[i];
+                if (metric.countMeasures <= 0)
+                    continue;
+                bool isSize = i >= (int)DVMHStatMetrics.DVMH_STAT_METRIC_CPY_DTOH &&
+                    i <= (int)DVMHStatMetrics.DVMH_STAT_METRIC_CPY_GET_ACTUAL ||
+                    i == (int)DVMHStatMetrics.DVMH_STAT_METRIC_UTIL_ARRAY_TRANSFORMATION;
+                bool isPositive = isSize;
+                GPUGridView.AddRow(new NSView[]
+                {
+                    MakeLabel(dvmhStatMetricsTitles[i]),
+                    MakeLabel(metric.countMeasures.ToString()),
+                    MakeLabel(PrepareValue(metric.min, isPositive, isSize, false, false)),
+                    MakeLabel(PrepareValue(metric.max, isPositive, isSize, false, false)),
+                    MakeLabel(PrepareValue(metric.sum, isPositive, isSize, false, false)),
+                    MakeLabel(PrepareValue(metric.mean, isPositive, isSize, false, false)),
+                    MakeLabel(PrepareValue(metric.timeProductive, true, false, true, true)),
+                    MakeLabel(PrepareValue(metric.timeLost, true, false, true, true))
+                });
+            }
+            GPUGridView.AddRow(new NSView[] { MakeLabel(" ") });
+            GPUGridView.AddRow(new NSView[]
+            {
+                MakeLabel("Productive time      " + PrepareValue(gpu.prod_time, true, false, true, true))
+            });
+            GPUGridView.AddRow(new NSView[]
+            {
+                MakeLabel("Lost time                " + PrepareValue(gpu.lost_time, true, false, true, true))
+            });
+            GPUGridView.NeedsUpdateConstraints = true;
         }
     }
 }

@@ -8,13 +8,13 @@ namespace Analyzer
         public static string StatDirPath = @"/Users/penek/Projects/Analyzer/StatDir/";
 
         public string path;
-        public string creationTime;
+        public DateTime creationTime;
         public string hash;
         public string info;
 
         public StatDir() { }
 
-        public StatDir(string path, string creationTime, string hash, string info)
+        public StatDir(string path, DateTime creationTime, string hash, string info)
         {
             this.path = path;
             this.creationTime = creationTime;

@@ -25,6 +25,9 @@ namespace Analyzer
 		AppKit.NSLevelIndicator LoadLevel { get; set; }
 
 		[Outlet]
+		AppKit.NSButton ProcButton { get; set; }
+
+		[Outlet]
 		AppKit.NSTextField ReasonLabel { get; set; }
 
 		[Outlet]
@@ -35,6 +38,11 @@ namespace Analyzer
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (ProcButton != null) {
+				ProcButton.Dispose ();
+				ProcButton = null;
+			}
+
 			if (IdleLabel != null) {
 				IdleLabel.Dispose ();
 				IdleLabel = null;

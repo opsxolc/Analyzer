@@ -105,6 +105,9 @@ namespace Analyzer
 		[Action ("ReadStat:")]
 		partial void ReadStat (Foundation.NSObject sender);
 
+		[Action ("ResetLoadStat:")]
+		partial void ResetLoadStat (Foundation.NSObject sender);
+
 		[Action ("SelectionChanged:")]
 		partial void SelectionChanged (AppKit.NSOutlineView sender);
 

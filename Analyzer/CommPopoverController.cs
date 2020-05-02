@@ -15,7 +15,7 @@ namespace Analyzer
 		{
 		}
 
-        public CGSize Init(int statNum, int interNum)
+        public CGSize Init(int statNum, int interNum, NSWindow window = null)
         {
 			//Console.WriteLine("Going to Init CommPopover");
 			var stat = ViewController.CompareList.At(statNum);
@@ -36,8 +36,6 @@ namespace Analyzer
 			var maxColOp = Math.Max(inter.col_op[(int)ColOps.IO].comm, inter.col_op[(int)ColOps.RD].comm);
 			maxColOp = Math.Max(maxColOp, inter.col_op[(int)ColOps.SH].comm);
 			maxColOp = Math.Max(maxColOp, inter.col_op[(int)ColOps.RA].comm);
-
-			//Console.WriteLine(maxColOp + " - " + ColOpLabel + " - " + ColOpLevel + " - " + ColOpNameLabel);
 
 			if (inter.col_op[(int)ColOps.IO].comm == maxColOp) { 
 			    ColOpNameLabel.StringValue = "Ввод/вывод";
