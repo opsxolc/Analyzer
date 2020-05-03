@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -17,11 +16,8 @@ namespace Analyzer
         public static StatCompareList CompareList;  // static для доступа с другого ViewController'a
         private nint YesButtonTag, NoButtonTag;
         public static NSStoryboard storyboard = NSStoryboard.FromName("Main", null);
-        private NSWindowController popoverWindowController;
-        private PopoverController popoverViewController;
         public double plotCompareMaxTime;
         public double plotStatMaxTime;
-        private bool firstTime;
         private NSPopover helpPopover;
         public static Stat LoadedStat;
         public static int SelectedProc = -1;
@@ -40,7 +36,8 @@ namespace Analyzer
         {
             DeselectProcessors();
             plotStatMaxTime = -1;
-            InterTreeSplitView.SetPositionOfDivider(510, 0);
+            InterTreeSplitView.SetPositionOfDivider(
+                (nfloat) Math.Min(674, InterTreeSplitView.Frame.Width - 300), 0);
             InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
             InterTreeSegmentController.SetSelected(false, 1);
             InterTreeSegmentController.SetSelected(true, 0);
@@ -92,7 +89,6 @@ namespace Analyzer
             InitInterTree();
             InterTreeSplitView.SetPositionOfDivider(0, 0);
             InterTreeSegmentController.SetSelected(false, 0);
-            firstTime = true;
 
             //---  Init alerts  ---//
             Alert = new NSAlert();
@@ -105,10 +101,6 @@ namespace Analyzer
 
             CompareList = new StatCompareList();
             plotView.Model = new OxyPlot.PlotModel();
-
-            //---  Init popover  ---//
-            popoverWindowController = storyboard.InstantiateControllerWithIdentifier("Popover") as NSWindowController;
-            popoverViewController = popoverWindowController.ContentViewController as PopoverController;
 
             //---  Init help button  ---//
             NSButton helpIntervalCompare = new NSButton
@@ -124,8 +116,10 @@ namespace Analyzer
             helpIntervalCompare.AutoresizingMask = NSViewResizingMask.MinXMargin;
 
             //---  Init help popover  ---//
-            var helpWindowController = storyboard.InstantiateControllerWithIdentifier("Popover") as NSWindowController;
-            var helpViewController = helpWindowController.ContentViewController as PopoverController;
+            var helpWindowController = storyboard
+                .InstantiateControllerWithIdentifier("Popover") as NSWindowController;
+            var helpViewController = helpWindowController
+                .ContentViewController as PopoverController;
             helpPopover = new NSPopover
             {
                 ContentSize = new CGSize(200, 180),
@@ -180,9 +174,13 @@ namespace Analyzer
         private void IntervalCompareButton_Activated(object sender, EventArgs e)
         {
             if (IntervalCompareButton.State == NSCellStateValue.On)
+            {
+                CompareSplitView.SetPositionOfDivider(0, 0);
                 CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width - 200, 0);
-            else {
-                CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width, 0);
+            }
+            else
+            {
+                CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width , 0);
                 CompareIntervalTree.SelectRow(0, false);
             }
         }
@@ -219,6 +217,9 @@ namespace Analyzer
         public void SetDataToInterView(Stat stat, int row = 0)
         {
             LoadedStat = stat;
+            LoadStatLabel.Hidden = false;
+            LoadStatLabel.StringValue = stat.GetInfoForStatDir();
+            LoadStatLabel.SetFrameSize(LoadStatLabel.FittingSize);
             InitInterTree();
             InterTreePlotView.Model = PlotMaker.ProcLostTimePlot(LoadedStat, this, 0, plotStatMaxTime);
             plotStatMaxTime = InterTreePlotView.Model.GetAxis("Time").ActualMaximum;
@@ -295,7 +296,6 @@ namespace Analyzer
             StatDir statDir = ((StatTableDataSource)StatTableView.DataSource)
                 .StatDirs[(int)StatTableView.SelectedRow];
             SetDataToInterView(new Stat(statDir.path, true));
-            firstTime = false;
 
             //---  Switch active view   ---//
             TabView.SelectAt(1);
@@ -384,25 +384,13 @@ namespace Analyzer
             CompareSplitView.SetPositionOfDivider(CompareSplitView.Frame.Width, 0);
         }
 
-        partial void CompareBack(NSObject sender)
-        {
-            //TODO: Сделать нормальный "Назад", наверно
-
-            NSPopover popover = new NSPopover();
-            popover.ContentSize = new CGSize(100, 100);
-            popover.Behavior = NSPopoverBehavior.Transient;
-            popover.Animates = true;
-            popover.ContentViewController = popoverViewController;
-
-            popover.Show(new CGRect(new CGPoint(0, 0), new CGSize(100, 100)), View, NSRectEdge.MaxXEdge);
-        }
-
         partial void InterTreeSegment(NSObject sender)
         {
             var s = sender as NSSegmentedControl;
 
             if (s.IsSelectedForSegment(0) && InterTreePlotView.Frame.Width <= 20)
-                InterTreeSplitView.SetPositionOfDivider(510, 0);
+                InterTreeSplitView.SetPositionOfDivider(
+                    (nfloat)Math.Min(674, InterTreeSplitView.Frame.Width - 300), 0);
             else if (!s.IsSelectedForSegment(0))
                 InterTreeSplitView.SetPositionOfDivider(0, 0);
             
@@ -443,7 +431,6 @@ namespace Analyzer
                     plotView.Model = PlotMaker.GPUComparePlot();
                     newMax = plotView.Model.GetAxis("Time").ActualMaximum;
                     ((IntervalCompareOutlineDelegate)CompareIntervalTree.Delegate).maxTimeGPU = newMax;
-                    Console.WriteLine("GPU NewMax = " + newMax);
                     plotView.Model = PlotMaker.GPUComparePlot((int)CompareIntervalTree.SelectedRow, newMax);
                     break;
             }
@@ -477,11 +464,13 @@ namespace Analyzer
                 if (GPUCardController.Height > maxSize)
                     maxSize = GPUCardController.Height;
             }
-
+            
             GPUStackView.SetFrameSize(new CGSize(675, maxSize * inter.proc_times[procNum].num_gpu + 5));
 
             if (GPUScrollView.Frame.Height < 10)
-                PlotSplitView.SetPositionOfDivider(PlotSplitView.Frame.Height - 250, 0);
+                PlotSplitView.SetPositionOfDivider(
+                    (nfloat)Math.Max(PlotSplitView.Frame.Height - 250,
+                    PlotSplitView.Frame.Height - GPUStackView.Frame.Height), 0);
             //TODO: Скроллить наверх
             //CGPoint newScrollOrigin;
             //if (GPUScrollView.ContentView.IsFlipped)
@@ -512,6 +501,8 @@ namespace Analyzer
             InterTreeSplitView.SetPositionOfDivider(InterTreeSplitView.Frame.Width, 1);
             InterTreeSegmentController.SetSelected(false, 1);
             InterText.Value = "";
+            LoadStatLabel.StringValue = "";
+            LoadStatLabel.Hidden = true;
         }
     }
 

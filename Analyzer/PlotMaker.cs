@@ -29,7 +29,7 @@ namespace Analyzer
 
             int curOffset = 2, offset = 11;
 
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 5; ++i)
             {
                 xaxis.Add(new CategoryAxis
                 {
@@ -41,16 +41,18 @@ namespace Analyzer
                 });
                 curOffset += offset;
 
-                data.Add(new ColumnSeries
-                {
-                    LabelPlacement = LabelPlacement.Middle,
-                    LabelFormatString = "{0:0.###}",
-                    IsStacked = true
-                });
+                if (i < 4) { 
+                    data.Add(new ColumnSeries
+                    {
+                        LabelPlacement = LabelPlacement.Middle,
+                        LabelFormatString = "{0:0.###}",
+                        IsStacked = true
+                    });
 
-                if (popover)
-                    data[i].MouseDown += (object sender, OxyMouseDownEventArgs e)
-                        => Model_MouseDown(sender, e, interNum);
+                    if (popover)
+                        data[i].MouseDown += (object sender, OxyMouseDownEventArgs e)
+                            => Model_MouseDown(sender, e, interNum);
+                }
             }
 
             xaxis[0].MajorGridlineStyle = LineStyle.Solid;
@@ -101,14 +103,14 @@ namespace Analyzer
 
             for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
             {
-                xaxis[0].Labels.Add("Сетка: "
-                    + ViewController.CompareList.At(i).Info.p_heading.Replace('*', 'x'));
-                xaxis[1].Labels.Add("Время выполнения: "
-                    + ViewController.CompareList.At(i).Info.inter[0].times.exec_time.ToString("F3"));
-                xaxis[2].Labels.Add("Коэфф. эффективности: "
-                    + ViewController.CompareList.At(i).Info.inter[0].times.efficiency.ToString("F3"));
-                xaxis[3].Labels.Add("Файл: "
-                    + ViewController.CompareList.At(i).Info.inter[0].id.pname);
+                xaxis[0].Labels.Add(ViewController.CompareList.At(i).Info
+                    .p_heading.Replace('*', 'x'));
+                xaxis[1].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                    .times.exec_time.ToString("F3") + "s");
+                xaxis[2].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                    .times.efficiency.ToString("F3"));
+                xaxis[3].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                    .id.pname);
                 data[0].Items.Add(new ColumnItem(intervals[i].times.insuf_sys));
                 data[1].Items.Add(new ColumnItem(intervals[i].times.insuf_user));
                 data[2].Items.Add(new ColumnItem(intervals[i].times.idle));
@@ -323,20 +325,22 @@ namespace Analyzer
 
             for (int i = 0; i < ViewController.CompareList.GetCount(); ++i)
             {
-                xaxis[0].Labels.Add("Кол-во ГПУ: "
+                xaxis[0].Labels.Add("GPU ➢ "
                     + ViewController.CompareList.At(i).NumGPU);
-                xaxis[1].Labels.Add("Время выполнения: "
-                    + ViewController.CompareList.At(i).Info.inter[0].times.exec_time.ToString("F3"));
-                xaxis[2].Labels.Add("Коэфф. эффективности: "
-                    + ViewController.CompareList.At(i).Info.inter[0].times.efficiency.ToString("F3"));
-                xaxis[3].Labels.Add("Файл: "
-                    + ViewController.CompareList.At(i).Info.inter[0].id.pname);
+                xaxis[1].Labels.Add(ViewController.CompareList.At(i).Info
+                    .p_heading.Replace('*', 'x'));
+                xaxis[2].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                    .times.exec_time.ToString("F3") + "s");
+                xaxis[3].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                    .times.efficiency.ToString("F3"));
+                xaxis[4].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                    .id.pname);
                 prodGPU.Points.Add(new DataPoint(i, intervals[i].times.gpu_time_prod));
                 lostGPU.Points.Add(new DataPoint(i, intervals[i].times.gpu_time_lost));
                 execTime.Points.Add(new DataPoint(i, intervals[i].times.exec_time));
             }
 
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 5; ++i)
             {
                 model.Axes.Add(xaxis[i]);
             }

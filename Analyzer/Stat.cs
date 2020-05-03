@@ -57,8 +57,8 @@ namespace Analyzer
         {
             string res = Info.inter[0].id.pname;
             if (Info.p_heading != null)
-                res += "  ∙  " + Info.p_heading.Replace('*', 'x');
-            res += "  ∙  " + Info.inter[0].times.exec_time.ToString("F3") + "s";
+                res += "   |  " + Info.p_heading.Replace('*', 'x');
+            res += "  |  " + Info.inter[0].times.exec_time.ToString("F3") + "s";
             return res;
         }
 

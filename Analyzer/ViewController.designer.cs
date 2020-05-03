@@ -55,6 +55,9 @@ namespace Analyzer
 		AppKit.NSOutlineView InterView { get; set; }
 
 		[Outlet]
+		AppKit.NSTextField LoadStatLabel { get; set; }
+
+		[Outlet]
 		AppKit.NSSplitView PlotSplitView { get; set; }
 
 		[Outlet]
@@ -119,6 +122,11 @@ namespace Analyzer
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (LoadStatLabel != null) {
+				LoadStatLabel.Dispose ();
+				LoadStatLabel = null;
+			}
+
 			if (ChooseLabel != null) {
 				ChooseLabel.Dispose ();
 				ChooseLabel = null;

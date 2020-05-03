@@ -10,36 +10,6 @@ using OxyPlot.Xamarin.Mac;
 
 namespace Analyzer
 {
-    public class IntervalStackView : NSStackView
-    {
-        private Interval item;
-        private DateTime lastClick;
-        private NSWindowController controller;
-        private static NSStoryboard storyboard = NSStoryboard.FromName("Main", null);
-
-        public IntervalStackView(Interval item)
-        {
-            this.item = item;
-            lastClick = DateTime.Now;
-            //TODO: Use normal window
-            //controller = storyboard.InstantiateControllerWithIdentifier("IntervalCompare") as NSWindowController;
-            //controller.Window.Title = "Some title " + item.Info.times.exec_time;
-        }
-
-        public override void MouseDown(NSEvent theEvent)
-        {
-            DateTime now = DateTime.Now;
-            if (now.Subtract(lastClick).TotalMilliseconds < 500.0)
-            {
-                // Actions on DoubleClick
-                //controller.ShowWindow(this);
-            }
-            lastClick = now;
-            base.MouseDown(theEvent);
-            return;
-        }
-    }
-
     public class IntervalOutlineDelegate : NSOutlineViewDelegate
     {
         private const string CellIdentifier = "IntervalCell";
