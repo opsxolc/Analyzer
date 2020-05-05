@@ -49,6 +49,7 @@ namespace Analyzer
 
             NSClipView view = (NSClipView)outlineView.MakeView(CellIdentifier, this);
             NSTextField exprView = (NSTextField)(view == null ? null : view.Subviews[0]);
+            NSBox line = (NSBox)(view == null ? null : view.Subviews[1]);
 
             // Cast item
             var interval = item as Interval;
@@ -79,7 +80,7 @@ namespace Analyzer
                 exprView.SetFrameOrigin(new CGPoint(0, 2));
                 exprView.SetFrameSize(new CGSize(13, 28));
 
-                NSBox line = new NSBox
+                line = new NSBox
                 {
                     BoxType = NSBoxType.NSBoxSeparator
                 };
@@ -93,42 +94,86 @@ namespace Analyzer
                 for (int i = view.Subviews.Length - 1; i > 1; --i)
                     view.Subviews[i].RemoveFromSuperview();
 
-            //---  Создаем ячейки для интервалов  ---//
-            nfloat offset = 0;
-            for (var i = intervals.Count - 1; i >= 0; --i)
+            if (ViewController.CompareList.GetCount() <= 4)
             {
-                var gradientLayer = MakeGradLayer(intervals[i]);
-
-                var interStack = new NSStackView
+                view.WantsLayer = false;
+                
+                //---  Создаем ячейки для интервалов  ---//
+                nfloat offset = 0;
+                for (var i = intervals.Count - 1; i >= 0; --i)
                 {
-                    Orientation = NSUserInterfaceLayoutOrientation.Vertical,
-                    WantsLayer = true,
-                    AutoresizesSubviews = false
-                };
+                    var gradientLayer = MakeGradLayer(intervals[i]);
 
-                var val = new NSTextField
+                    var interStack = new NSStackView
+                    {
+                        Orientation = NSUserInterfaceLayoutOrientation.Vertical,
+                        WantsLayer = true,
+                        AutoresizesSubviews = false
+                    };
+
+                    var val = new NSTextField
+                    {
+                        Alignment = NSTextAlignment.Center,
+                        Selectable = false,
+                        Editable = false,
+                        DrawsBackground = false,
+                        Bordered = false,
+                        BackgroundColor = NSColor.Clear,
+                        WantsLayer = true
+                    };
+
+                    val.StringValue = intervals[i].times.exec_time.ToString("F1")
+                        + "\n" + intervals[i].times.efficiency.ToString("F1");
+                    gradientLayer.Frame = new CGRect(new CGPoint(0, 0), val.FittingSize);
+                    interStack.Layer.InsertSublayerBelow(gradientLayer, val.Layer);
+                    interStack.Alignment = NSLayoutAttribute.CenterY;
+                    interStack.SetFrameSize(val.FittingSize);
+                    interStack.AddView(val, NSStackViewGravity.Top);
+
+                    offset += val.FittingSize.Width;
+                    interStack.AutoresizingMask = NSViewResizingMask.MinXMargin;
+                    interStack.SetFrameOrigin(new CGPoint(view.Bounds.Width - offset, 0));
+                    view.AddSubview(interStack);
+                }
+            }
+            else
+            {
+                int maxNum, minNum;
+                (maxNum, minNum) = GetMaxMinStats(intervals);
+
+                NSTextField textView = new NSTextField
                 {
-                    Alignment = NSTextAlignment.Center,
                     Selectable = false,
                     Editable = false,
                     DrawsBackground = false,
-                    Bordered = false,
-                    BackgroundColor = NSColor.Clear,
-                    WantsLayer = true
+                    Bordered = false
+                };
+                textView.StringValue = "Max " + ViewController.CompareList
+                      .At(maxNum).Info.p_heading.Replace('*', 'x') + "\nMin "
+                    + ViewController.CompareList
+                      .At(minNum).Info.p_heading.Replace('*', 'x');
+                textView.SetFrameSize(textView.FittingSize);
+                textView.SetFrameOrigin(new CGPoint(line.Frame.Location.X + 10, 0));
+
+                NSTextField textView1 = new NSTextField
+                {
+                    Selectable = false,
+                    Editable = false,
+                    DrawsBackground = false,
+                    Bordered = false
                 };
 
-                val.StringValue = intervals[i].times.exec_time.ToString("F1")
-                    + "\n" + intervals[i].times.efficiency.ToString("F1");
-                gradientLayer.Frame = new CGRect(new CGPoint(0, 0), val.FittingSize);
-                interStack.Layer.InsertSublayerBelow(gradientLayer, val.Layer);
-                interStack.Alignment = NSLayoutAttribute.CenterY;
-                interStack.SetFrameSize(val.FittingSize);
-                interStack.AddView(val, NSStackViewGravity.Top);
+                textView1.SetFrameOrigin(new CGPoint(textView.Frame.Location.X + textView.Frame.Width + 4, 0));
 
-                offset += val.FittingSize.Width;
-                interStack.AutoresizingMask = NSViewResizingMask.MinXMargin;
-                interStack.SetFrameOrigin(new CGPoint(view.Bounds.Width - offset, 0));
-                view.AddSubview(interStack);
+                textView1.StringValue = " ➢  " + intervals[maxNum].times.exec_time.ToString("F3") + "s\n"
+                + " ➢  " + intervals[minNum].times.exec_time.ToString("F3") + "s";
+                textView1.SetFrameSize(textView1.FittingSize);
+
+                var gradientLayer = MakeGradLayer(intervals[maxNum], false);
+                view.WantsLayer = true;
+                view.Layer = gradientLayer;
+                view.AddSubview(textView);
+                view.AddSubview(textView1);
             }
 
             //---  Устанавливаем значение Expr  ---//
@@ -149,7 +194,7 @@ namespace Analyzer
             return view;
         }
 
-        private CAGradientLayer MakeGradLayer(IntervalJson inter)
+        private CAGradientLayer MakeGradLayer(IntervalJson inter, bool isVertical = true)
         {
             var gradientLayer = new CAGradientLayer();
             List<CGColor> colors = new List<CGColor>();
@@ -161,13 +206,34 @@ namespace Analyzer
                 colors.Add(OxyColors.Orchid.ToCGColor());
             if (inter.times.insuf_sys >= 0.2 * maxTimeLost)
                 colors.Add(OxyColors.Pink.ToCGColor());
-            if (colors.Count == 1)
-                colors.Add(colors[0]);
+            if (isVertical) {
+                if (colors.Count == 1)
+                    colors.Add(colors[0]);
+                gradientLayer.StartPoint = new CGPoint(.0, 1.0);
+                gradientLayer.EndPoint = new CGPoint(.0, .0);
+            }
+            else
+            {
+                colors.Insert(0, OxyColors.Transparent.ToCGColor());
+                gradientLayer.StartPoint = new CGPoint(.0, .0);
+                gradientLayer.EndPoint = new CGPoint(1.0, .0);
+            }
             gradientLayer.Colors = colors.ToArray();
-            gradientLayer.StartPoint = new CGPoint(.0, 1.0);
-            gradientLayer.EndPoint = new CGPoint(.0, .0);
-
             return gradientLayer;
+        }
+
+        private (int maxNum, int minNum)
+            GetMaxMinStats(List<IntervalJson> intervals)
+        {
+            int maxNum = 0, minNum = 0;
+            for(int i = 0; i < intervals.Count; ++i)
+            {
+                if (intervals[i].times.exec_time > intervals[maxNum].times.exec_time)
+                    maxNum = i;
+                if (intervals[i].times.exec_time < intervals[minNum].times.exec_time)
+                    minNum = i;
+            }
+            return (maxNum, minNum);
         }
 
     }

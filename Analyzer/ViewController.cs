@@ -8,7 +8,6 @@ using Foundation;
 
 namespace Analyzer
 {
-
     public partial class ViewController : NSViewController
     {
         private NSAlert Alert;  // диалоговое окно для сообщений

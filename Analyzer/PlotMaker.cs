@@ -105,11 +105,11 @@ namespace Analyzer
             {
                 xaxis[0].Labels.Add(ViewController.CompareList.At(i).Info
                     .p_heading.Replace('*', 'x'));
-                xaxis[1].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                xaxis[1].Labels.Add(ViewController.CompareList.At(i).Info.inter[intervalNum]
                     .times.exec_time.ToString("F3") + "s");
-                xaxis[2].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                xaxis[2].Labels.Add(ViewController.CompareList.At(i).Info.inter[intervalNum]
                     .times.efficiency.ToString("F3"));
-                xaxis[3].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                xaxis[3].Labels.Add(ViewController.CompareList.At(i).Info.inter[intervalNum]
                     .id.pname);
                 data[0].Items.Add(new ColumnItem(intervals[i].times.insuf_sys));
                 data[1].Items.Add(new ColumnItem(intervals[i].times.insuf_user));
@@ -329,11 +329,11 @@ namespace Analyzer
                     + ViewController.CompareList.At(i).NumGPU);
                 xaxis[1].Labels.Add(ViewController.CompareList.At(i).Info
                     .p_heading.Replace('*', 'x'));
-                xaxis[2].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                xaxis[2].Labels.Add(ViewController.CompareList.At(i).Info.inter[intervalNum]
                     .times.exec_time.ToString("F3") + "s");
-                xaxis[3].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                xaxis[3].Labels.Add(ViewController.CompareList.At(i).Info.inter[intervalNum]
                     .times.efficiency.ToString("F3"));
-                xaxis[4].Labels.Add(ViewController.CompareList.At(i).Info.inter[0]
+                xaxis[4].Labels.Add(ViewController.CompareList.At(i).Info.inter[intervalNum]
                     .id.pname);
                 prodGPU.Points.Add(new DataPoint(i, intervals[i].times.gpu_time_prod));
                 lostGPU.Points.Add(new DataPoint(i, intervals[i].times.gpu_time_lost));
