@@ -62,6 +62,7 @@ namespace Analyzer
                     Identifier = CellIdentifier,
                     AutoresizesSubviews = true,
                     DrawsBackground = false,
+                    WantsLayer = true,
                     AutoresizingMask = NSViewResizingMask.WidthSizable
                 };
 
@@ -96,7 +97,7 @@ namespace Analyzer
 
             if (ViewController.CompareList.GetCount() <= 4)
             {
-                view.WantsLayer = false;
+                view.Layer = null;
                 
                 //---  Создаем ячейки для интервалов  ---//
                 nfloat offset = 0;
@@ -138,8 +139,8 @@ namespace Analyzer
             }
             else
             {
-                int maxNum, minNum;
-                (maxNum, minNum) = GetMaxMinStats(intervals);
+                int maxNum, minNum, maxLostNum;
+                (maxNum, minNum, maxLostNum) = GetMaxMinStats(intervals);
 
                 NSTextField textView = new NSTextField
                 {
@@ -169,7 +170,7 @@ namespace Analyzer
                 + " ➢  " + intervals[minNum].times.exec_time.ToString("F3") + "s";
                 textView1.SetFrameSize(textView1.FittingSize);
 
-                var gradientLayer = MakeGradLayer(intervals[maxNum], false);
+                var gradientLayer = MakeGradLayer(intervals[maxLostNum], false);
                 view.WantsLayer = true;
                 view.Layer = gradientLayer;
                 view.AddSubview(textView);
@@ -198,13 +199,13 @@ namespace Analyzer
         {
             var gradientLayer = new CAGradientLayer();
             List<CGColor> colors = new List<CGColor>();
-            if (inter.times.comm >= 0.2 * maxTimeLost)
+            if (inter.times.comm >= 0.15 * maxTimeLost)
                 colors.Add(OxyColors.GreenYellow.ToCGColor());
-            if (inter.times.idle >= 0.2 * maxTimeLost)
+            if (inter.times.idle >= 0.15 * maxTimeLost)
                 colors.Add(OxyColors.LightSkyBlue.ToCGColor());
-            if (inter.times.insuf_user >= 0.2 * maxTimeLost)
+            if (inter.times.insuf_user >= 0.15 * maxTimeLost)
                 colors.Add(OxyColors.Orchid.ToCGColor());
-            if (inter.times.insuf_sys >= 0.2 * maxTimeLost)
+            if (inter.times.insuf_sys >= 0.15 * maxTimeLost)
                 colors.Add(OxyColors.Pink.ToCGColor());
             if (isVertical) {
                 if (colors.Count == 1)
@@ -222,18 +223,20 @@ namespace Analyzer
             return gradientLayer;
         }
 
-        private (int maxNum, int minNum)
+        private (int maxNum, int minNum, int maxLostNum)
             GetMaxMinStats(List<IntervalJson> intervals)
         {
-            int maxNum = 0, minNum = 0;
+            int maxNum = 0, minNum = 0, maxLostNum = 0;
             for(int i = 0; i < intervals.Count; ++i)
             {
                 if (intervals[i].times.exec_time > intervals[maxNum].times.exec_time)
                     maxNum = i;
                 if (intervals[i].times.exec_time < intervals[minNum].times.exec_time)
                     minNum = i;
+                if (intervals[i].times.lost_time > intervals[maxLostNum].times.lost_time)
+                    maxLostNum = i;
             }
-            return (maxNum, minNum);
+            return (maxNum, minNum, maxLostNum);
         }
 
     }
